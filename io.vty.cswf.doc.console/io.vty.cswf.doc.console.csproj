@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>io.vty.cswf.doc.console</RootNamespace>
-    <AssemblyName>io.vty.cswf.doc.console</AssemblyName>
+    <AssemblyName>cswf-doc</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -50,6 +50,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\cswf\io.vty.cswf\io.vty.cswf.csproj">
+      <Project>{074d7a3b-adae-434a-af73-bb8263965303}</Project>
+      <Name>io.vty.cswf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\log4net\src\log4net.vs2010.csproj">
+      <Project>{181fe707-e161-4722-9f38-6aaab6faa106}</Project>
+      <Name>log4net.vs2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\io.vty.cswf.doc\io.vty.cswf.doc.csproj">
       <Project>{e9b1e886-fdd3-47af-a2be-4f1c681ba4fe}</Project>
       <Name>io.vty.cswf.doc</Name>

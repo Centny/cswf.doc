@@ -48,6 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="cov_doc2jpg.bat" />
+    <None Include="cov_fc.bat" />
+    <None Include="cov_pdf2jpg.bat" />
+    <None Include="cov_png2jpg.bat" />
+    <None Include="cov_ppt2jpg.bat" />
+    <None Include="cov_xls2jpg.bat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cswf\io.vty.cswf\io.vty.cswf.csproj">
@@ -64,6 +70,10 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y ..\..\cov_* .
+xcopy /y ..\..\..\io.vty.cswf.doc.test\xx.* .</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

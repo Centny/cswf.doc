@@ -15,9 +15,21 @@ namespace io.vty.cswf.doc.console
         static void Usage()
         {
             Console.WriteLine("Usage:\n" +
-                "   cswf-doc -l -o <json result> -w <word file> <image path format>   convert word document to image\n" +
-                "   cswf-doc -l -o <json result> -e <excel file> <pdf path format>   convert excel doucmnet to pdf\n" +
-                "   cswf-doc -l -o <json result> -f <filter name> -W <image width> -H <image height> -p <ppt file> <image path format>    convert ppt doucmnet to image\n"
+                "   cswf-doc <options> -w <word file> <image path format>   convert word document to image\n" +
+                "   cswf-doc <options> -e <excel file> <pdf path format>    convert excel doucmnet to pdf\n" +
+                "   cswf-doc <options> -p <ppt file> <image path format>    convert ppt doucmnet to image\n" +
+                "   \n" +
+                " common options:\n" +
+                "   -l show detail log\n" +
+                "   -o <json result>\n" +
+                "   -exe_c <process executor>\n" +
+                "   -exe_f <process out file format>\n" +
+                "   -exe_a <process arguments>\n" +
+                "   \n" +
+                " ppt options:\n" +
+                "   -f <filer name> the filter nam to output file, like png\n" +
+                "   -W <width>  the output image width\n" +
+                "   -H <height>  the output image height\n"
                 );
         }
         static void Main(string[] args)
@@ -35,24 +47,36 @@ namespace io.vty.cswf.doc.console
                 cargs.StringVal("f", out filter);
                 cargs.IntVal("W", out width);
                 cargs.IntVal("h", out height);
+                string exe_c = "", exe_f = "", exe_a = "";
+                cargs.StringVal("exe_c", out exe_c);
+                cargs.StringVal("exe_f", out exe_f);
+                cargs.StringVal("exe_a", out exe_a);
+                int beg = 0;
                 if (cargs.Vals.Count < 2)
                 {
                     Usage();
                     Environment.ExitCode = 1;
                     return;
                 }
+                Converter.OnProcess proc = null;
+                if (exe_c.Length > 0 && exe_f.Length > 0)
+                {
+                    var exec = new Converter.Proc(exe_c, exe_f);
+                    exec.Args = exe_a;
+                    proc = exec.exec;
+                }
                 Converter.Res res;
                 if (w)
                 {
-                    res = Converter.word2img(cargs.Vals[0], cargs.Vals[1], log);
+                    res = Converter.word2img(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
                 }
                 else if (e)
                 {
-                    res = Converter.excel2pdf(cargs.Vals[0], cargs.Vals[1], log);
+                    res = Converter.excel2pdf(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
                 }
                 else if (p)
                 {
-                    res = Converter.ppt2img(cargs.Vals[0], cargs.Vals[1], filter, width, height, log);
+                    res = Converter.ppt2img(cargs.Vals[0], cargs.Vals[1], beg, filter, width, height, log, proc);
                 }
                 else
                 {

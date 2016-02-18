@@ -17,11 +17,44 @@ namespace io.vty.cswf.doc
     {
         private static readonly ILog L = Log.New();
 
+        public class Proc
+        {
+            public string Name;
+            public string DstF;
+            public string Args;
+            public int exec(Res res, int count, string spath)
+            {
+                var dst_f = string.Format(this.DstF, count);
+                var data = util.Exec.exec(this.Name, spath, dst_f, string.Format("{0}", count), this.Args).Trim();
+                var lines = data.Split('\n');
+                var added = 0;
+                foreach (var line in lines)
+                {
+                    var tline = line.Trim();
+                    if (tline.Length < 1)
+                    {
+                        continue;
+                    }
+                    res.Files.Add(line);
+                    added += 1;
+                }
+                L.D("Proc exec <{0} {1} {2} {3} {4}> done with {5} file added", this.Name, spath, dst_f, count, this.Args, added);
+                return added;
+            }
+            public Proc(string name, string dst_f)
+            {
+                this.Name = name;
+                this.DstF = dst_f;
+            }
+        }
+
+        public delegate int OnProcess(Res res, int count, string spath);
         [DataContract]
         public class Res
         {
             [DataMember(Name = "code")]
-            public int Code {
+            public int Code
+            {
                 get; set;
             }
             [DataMember(Name = "count")]
@@ -32,7 +65,7 @@ namespace io.vty.cswf.doc
             [DataMember(Name = "files")]
             public IList<string> Files
             {
-                get;set;
+                get; set;
             }
             [DataMember(Name = "src")]
             public string Src
@@ -46,7 +79,7 @@ namespace io.vty.cswf.doc
             }
             public void Save(string json)
             {
-                using(var sw=new StreamWriter(json))
+                using (var sw = new StreamWriter(json))
                 {
                     sw.Write(Json.stringify(this));
                 }
@@ -60,13 +93,13 @@ namespace io.vty.cswf.doc
         /// <param name="dst_f">the destinace out file path format path with page number ,like xxx-{0}.png</param>
         /// <param name="log">whether show detail log</param>
         /// <returns>the numver of page</returns>
-        public static Res word2img(String src, String dst_f, bool log = false)
+        public static Res word2img(String src, String dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
             var res = new Res(src);
             var as_src = Path.GetFullPath(src);
             var as_dst_f = Path.GetFullPath(dst_f);
-            var pages = 0;
+            var pages = beg;
             L.D("executing word2png by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new word.Application();
             try
@@ -98,7 +131,7 @@ namespace io.vty.cswf.doc
                 //{
                 if (log)
                 {
-                    L.D("executing word2png by file({0}),destination format({1}) with {2} page found", as_src, as_dst_f, pages);
+                    L.D("executing word2png by file({0}),destination format({1}) with {2} page found", as_src, as_dst_f, pane.Pages.Count);
                 }
                 for (var i = 1; i <= pane.Pages.Count; i++)
                 {
@@ -122,8 +155,17 @@ namespace io.vty.cswf.doc
                     {
                         Image.FromStream(ms).Save(spath, ImageFormat.Png);
                     }
-                    res.Files.Add(String.Format(dst_f, pages));
-                    pages += 1;
+                    var rspath = String.Format(dst_f, pages);
+                    if (process == null)
+                    {
+                        res.Files.Add(rspath);
+                        pages += 1;
+                    }
+                    else
+                    {
+                        pages += process(res, pages, rspath);
+                    }
+
                 }
                 //  panes += 1;
                 //}
@@ -153,13 +195,13 @@ namespace io.vty.cswf.doc
         /// <param name="dst_f">the destinace out file path format path with sheet number ,like xxx-{0}.pdf</param>
         /// <param name="log">whether show detail log</param>
         /// <returns>the number of sheets</returns>
-        public static Res excel2pdf(String src, String dst_f, bool log = false)
+        public static Res excel2pdf(String src, String dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
             var res = new Res(src);
             var as_src = Path.GetFullPath(src);
             var as_dst_f = Path.GetFullPath(dst_f);
-            var sheets = 0;
+            var sheets = beg;
             L.D("executing excel2pdf by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new excel.Application();
             try
@@ -183,11 +225,19 @@ namespace io.vty.cswf.doc
                     var spath = String.Format(as_dst_f, sheets);
                     if (log)
                     {
-                        L.D("excel2pdf parsing file({0},{1}) to {3}", as_src, sheets, spath);
+                        L.D("excel2pdf parsing file({0},{1}) to {2}", as_src, sheets, spath);
                     }
                     sheet.ExportAsFixedFormat(excel.XlFixedFormatType.xlTypePDF, spath);
-                    res.Files.Add(String.Format(dst_f, sheets));
-                    sheets += 1;
+                    var rspath = String.Format(dst_f, sheets);
+                    if (process == null)
+                    {
+                        res.Files.Add(rspath);
+                        sheets += 1;
+                    }
+                    else
+                    {
+                        sheets += process(res, sheets, rspath);
+                    }
                 }
                 books.Close(true, null, null);
                 L.D("executing excel2pdf by file({0}),destination format({1}) done with sheets({2})", as_src, as_dst_f, sheets);
@@ -217,13 +267,13 @@ namespace io.vty.cswf.doc
         /// <param name="scaleHeight">the image height</param>
         /// <param name="log">whether show detail log</param>
         /// <returns>the number of slides</returns>
-        public static Res ppt2img(String src, String dst_f, string filterName = "png", int scaleWidth = 0, int scaleHeight = 0, bool log = false)
+        public static Res ppt2img(String src, String dst_f, int beg = 0, string filterName = "png", int scaleWidth = 0, int scaleHeight = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
             var res = new Res(src);
             var as_src = Path.GetFullPath(src);
             var as_dst_f = Path.GetFullPath(dst_f);
-            var slides = 0;
+            var slides = beg;
             L.D("executing word2png by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new ppt.Application();
             try
@@ -237,8 +287,16 @@ namespace io.vty.cswf.doc
                         L.D("word2png parsing file({0},{1}) to {2}", as_src, slides, spath);
                     }
                     slide.Export(spath, filterName, scaleWidth, scaleHeight);
-                    res.Files.Add(String.Format(dst_f, slides));
-                    slides += 1;
+                    var rspath = String.Format(dst_f, slides);
+                    if (process == null)
+                    {
+                        res.Files.Add(rspath);
+                        slides += 1;
+                    }
+                    else
+                    {
+                        slides += process(res, slides, rspath);
+                    }
 
                 }
                 L.D("executing word2png by file({0}),destination format({1}) done with slides({2})", as_src, as_dst_f, slides);

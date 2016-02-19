@@ -18,6 +18,7 @@ namespace io.vty.cswf.doc.console
                 "   cswf-doc <options> -w <word file> <image path format>   convert word document to image\n" +
                 "   cswf-doc <options> -e <excel file> <pdf path format>    convert excel doucmnet to pdf\n" +
                 "   cswf-doc <options> -p <ppt file> <image path format>    convert ppt doucmnet to image\n" +
+                "   cswf-doc <options> -x <source file> <destiance format>  exec something\n" +
                 "   \n" +
                 " common options:\n" +
                 "   -l show detail log\n" +
@@ -37,11 +38,12 @@ namespace io.vty.cswf.doc.console
             ILog L = Log.New();//for inintial logger.
             try
             {
-                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l" }, args, 0);
+                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l", "x" }, args, 0);
                 var log = cargs.Exist("l");
                 var w = cargs.Exist("w");
                 var e = cargs.Exist("e");
                 var p = cargs.Exist("p");
+                var x = cargs.Exist("x");
                 string filter = "";
                 int width, height;
                 cargs.StringVal("f", out filter);
@@ -77,6 +79,10 @@ namespace io.vty.cswf.doc.console
                 else if (p)
                 {
                     res = Converter.ppt2img(cargs.Vals[0], cargs.Vals[1], beg, filter, width, height, log, proc);
+                }
+                else if (x)
+                {
+                    res = Converter.exec(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
                 }
                 else
                 {

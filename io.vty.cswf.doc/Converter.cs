@@ -85,7 +85,35 @@ namespace io.vty.cswf.doc
                 }
             }
         }
-
+        /// <summary>
+        /// execute command and convert result to Res
+        /// </summary>
+        /// <param name="src">the word file path</param>
+        /// <param name="dst_f">the destinace out file path format path with page number ,like xxx-{0}.png</param>
+        /// <param name="log">whether show detail log</param>
+        /// <returns>the numver of page</returns>
+        /// 
+        public static Res exec(string src, string dst_f, int beg = 0, bool log = false, OnProcess process = null)
+        {
+            var res = new Res(src);
+            var count = beg;
+            var as_src = Path.GetFullPath(src);
+            var as_dst_f = Path.GetFullPath(dst_f);
+            L.D("executing exec by file({0}),destination format({1})", as_src, as_dst_f);
+            var rspath = string.Format(dst_f, count);
+            if (process == null)
+            {
+                res.Files.Add(rspath);
+                count += 1;
+            }
+            else
+            {
+                count += process(res, count, rspath);
+            }
+            res.Count = count;
+            L.D("executing exec by file({0}),destination format({1}) done with count({2})", as_src, as_dst_f, count);
+            return res;
+        }
         /// <summary>
         /// convert word to png
         /// </summary>
@@ -93,7 +121,7 @@ namespace io.vty.cswf.doc
         /// <param name="dst_f">the destinace out file path format path with page number ,like xxx-{0}.png</param>
         /// <param name="log">whether show detail log</param>
         /// <returns>the numver of page</returns>
-        public static Res word2img(String src, String dst_f, int beg = 0, bool log = false, OnProcess process = null)
+        public static Res word2img(string src, string dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
             var res = new Res(src);

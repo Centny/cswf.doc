@@ -1,6 +1,2 @@
 @echo off
-convert %1 -resize %3 %2
-for %%A in (%2) do set fn=%%~nA
-set cnt=0
-for %%A in (%fn%-*) do set /a cnt+=1
-echo %cnt%
+cswf-doc -l -o %2.json -exe_c cov_pdf2jpg_c.bat -exe_f %2.jpg -exe_a %3 -x %1 %1

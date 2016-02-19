@@ -302,7 +302,7 @@ namespace io.vty.cswf.doc
             var as_src = Path.GetFullPath(src);
             var as_dst_f = Path.GetFullPath(dst_f);
             var slides = beg;
-            L.D("executing word2png by file({0}),destination format({1})", as_src, as_dst_f);
+            L.D("executing ppt2img by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new ppt.Application();
             try
             {
@@ -312,7 +312,7 @@ namespace io.vty.cswf.doc
                     var spath = String.Format(as_dst_f, slides);
                     if (log)
                     {
-                        L.D("word2png parsing file({0},{1}) to {2}", as_src, slides, spath);
+                        L.D("ppt2img parsing file({0},{1}) to {2}", as_src, slides, spath);
                     }
                     slide.Export(spath, filterName, scaleWidth, scaleHeight);
                     var rspath = String.Format(dst_f, slides);
@@ -327,13 +327,13 @@ namespace io.vty.cswf.doc
                     }
 
                 }
-                L.D("executing word2png by file({0}),destination format({1}) done with slides({2})", as_src, as_dst_f, slides);
+                L.D("executing ppt2img by file({0}),destination format({1}) done with slides({2})", as_src, as_dst_f, slides);
                 res.Code = 0;
                 res.Count = slides;
             }
             catch (Exception e)
             {
-                L.E("executing word2png by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f, e.Message);
+                L.E(e, "executing ppt2img by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f, e.Message);
                 res.Code = 500;
                 throw e;
             }

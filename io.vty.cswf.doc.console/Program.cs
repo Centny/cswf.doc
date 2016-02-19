@@ -46,7 +46,7 @@ namespace io.vty.cswf.doc.console
                 var x = cargs.Exist("x");
                 string filter = "";
                 int width, height;
-                cargs.StringVal("f", out filter);
+                cargs.StringVal("f", out filter, "png");
                 cargs.IntVal("W", out width);
                 cargs.IntVal("h", out height);
                 string exe_c = "", exe_f = "", exe_a = "";

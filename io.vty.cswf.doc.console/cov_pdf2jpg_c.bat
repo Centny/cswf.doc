@@ -1,4 +1,6 @@
 @echo off
-convert %1 -resize %4 %2
-for %%A in (%2) do set fn=%%~nA
-for %%A in (%fn%-*) do echo %A%
+convert -density %4 -quality 100 %1 %2_%%d.jpg
+for %%A in (%2_*) do echo %%A%
+if "%5" == "rm" (
+  del %1
+)

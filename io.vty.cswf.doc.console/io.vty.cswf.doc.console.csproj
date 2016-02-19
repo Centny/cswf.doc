@@ -51,11 +51,11 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="cov_doc2jpg.bat" />
-    <None Include="cov_fc.bat" />
     <None Include="cov_pdf2jpg.bat" />
     <None Include="cov_pdf2jpg_c.bat" />
     <None Include="cov_png2jpg.bat" />
     <None Include="cov_ppt2jpg.bat" />
+    <None Include="cov_all_test.bat" />
     <None Include="cov_xls2jpg.bat" />
   </ItemGroup>
   <ItemGroup>

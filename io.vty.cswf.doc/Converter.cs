@@ -13,19 +13,58 @@ using io.vty.cswf.util;
 
 namespace io.vty.cswf.doc
 {
+    /// <summary>
+    /// the Converter to convert docx/pptx/xlsx to image
+    /// </summary>
     public class Converter
     {
+        /// <summary>
+        /// the log
+        /// </summary>
         private static readonly ILog L = Log.New();
-
+        /// <summary>
+        /// the process
+        /// </summary>
         public class Proc
         {
-            public string Name;
-            public string DstF;
-            public string Args;
+            /// <summary>
+            /// the exe name
+            /// </summary>
+            public string Name
+            {
+                get; set;
+            }
+            /// <summary>
+            /// destiance format string.
+            /// </summary>
+            public string DstF
+            {
+                get; set;
+            }
+            /// <summary>
+            /// the arguments.
+            /// </summary>
+            public string Args
+            {
+                get; set;
+            }
+            /// <summary>
+            /// exec the command ans append the result to Res
+            /// </summary>
+            /// <param name="res">the result</param>
+            /// <param name="count">currnet count</param>
+            /// <param name="spath">targe file path</param>
+            /// <returns></returns>
             public int exec(Res res, int count, string spath)
             {
                 var dst_f = string.Format(this.DstF, count);
-                var data = util.Exec.exec(this.Name, spath, dst_f, string.Format("{0}", count), this.Args).Trim();
+                string data = "";
+                var code = util.Exec.exec(out data, this.Name, spath, dst_f, string.Format("{0}", count), this.Args);
+                if (code != 0)
+                {
+                    throw new Exception(string.Format("exec {0} fail with exit code({1})", this.Name, code));
+                }
+                data = data.Trim();
                 var lines = data.Split('\n');
                 var added = 0;
                 foreach (var line in lines)
@@ -41,6 +80,11 @@ namespace io.vty.cswf.doc
                 L.D("Proc exec <{0} {1} {2} {3} {4}> done with {5} file added", this.Name, spath, dst_f, count, this.Args, added);
                 return added;
             }
+            /// <summary>
+            /// the constructor by exe name and destiance format.
+            /// </summary>
+            /// <param name="name">exe name</param>
+            /// <param name="dst_f">destiance format string</param>
             public Proc(string name, string dst_f)
             {
                 this.Name = name;
@@ -48,35 +92,65 @@ namespace io.vty.cswf.doc
             }
         }
 
+        /// <summary>
+        /// the delegate to process the converter.
+        /// </summary>
+        /// <param name="res">the result</param>
+        /// <param name="count">the current count</param>
+        /// <param name="spath">the tart file path</param>
+        /// <returns></returns>
         public delegate int OnProcess(Res res, int count, string spath);
+        /// <summary>
+        /// the struct of result
+        /// </summary>
         [DataContract]
         public class Res
         {
+            /// <summary>
+            /// the result code, 0 is success, other is fail.
+            /// </summary>
             [DataMember(Name = "code")]
             public int Code
             {
                 get; set;
             }
+            /// <summary>
+            /// the result count.
+            /// </summary>
             [DataMember(Name = "count")]
             public int Count
             {
                 get; set;
             }
+            /// <summary>
+            /// the result data.
+            /// </summary>
             [DataMember(Name = "files")]
             public IList<string> Files
             {
                 get; set;
             }
+            /// <summary>
+            /// the souce file
+            /// </summary>
             [DataMember(Name = "src")]
             public string Src
             {
                 get; set;
             }
+            /// <summary>
+            /// constructor by souce file path.
+            /// </summary>
+            /// <param name="src">the source file path</param>
             public Res(string src)
             {
                 this.Src = src;
                 this.Files = new List<string>();
             }
+            /// <summary>
+            /// saving the result to file with json format.
+            /// </summary>
+            /// <param name="json"></param>
             public void Save(string json)
             {
                 using (var sw = new StreamWriter(json))
@@ -88,11 +162,12 @@ namespace io.vty.cswf.doc
         /// <summary>
         /// execute command and convert result to Res
         /// </summary>
-        /// <param name="src">the word file path</param>
-        /// <param name="dst_f">the destinace out file path format path with page number ,like xxx-{0}.png</param>
-        /// <param name="log">whether show detail log</param>
-        /// <returns>the numver of page</returns>
-        /// 
+        /// <param name="src">the source file path</param>
+        /// <param name="dst_f">the destiance output path with string format</param>
+        /// <param name="beg">the begin number of format string</param>
+        /// <param name="log">if show detail log</param>
+        /// <param name="process">the process delegate</param>
+        /// <returns>the result</returns>
         public static Res exec(string src, string dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             var res = new Res(src);
@@ -114,13 +189,17 @@ namespace io.vty.cswf.doc
             L.D("executing exec by file({0}),destination format({1}) done with count({2})", as_src, as_dst_f, count);
             return res;
         }
+
+
         /// <summary>
         /// convert word to png
         /// </summary>
-        /// <param name="src">the word file path</param>
-        /// <param name="dst_f">the destinace out file path format path with page number ,like xxx-{0}.png</param>
-        /// <param name="log">whether show detail log</param>
-        /// <returns>the numver of page</returns>
+        /// <param name="src">the source file</param>
+        /// <param name="dst_f">the destinace out file path formatiing with page number, like xxx-{0}.png</param>
+        /// <param name="beg">the begin number of format string</param>
+        /// <param name="log">if show detail log</param>
+        /// <param name="process">the process delegate</param>
+        /// <returns>the result</returns>
         public static Res word2img(string src, string dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
@@ -175,7 +254,7 @@ namespace io.vty.cswf.doc
                     {
                         bits = page.EnhMetaFileBits;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         break;
                     }
@@ -217,12 +296,14 @@ namespace io.vty.cswf.doc
         }
 
         /// <summary>
-        /// convert excel to pdf
+        /// convert exec to pdf
         /// </summary>
-        /// <param name="src">the excel file path</param>
-        /// <param name="dst_f">the destinace out file path format path with sheet number ,like xxx-{0}.pdf</param>
-        /// <param name="log">whether show detail log</param>
-        /// <returns>the number of sheets</returns>
+        /// <param name="src">the source file</param>
+        /// <param name="dst_f">the destinace out file path formatiing with page number, like xxx-{0}.pdf</param>
+        /// <param name="beg">the begin number of format string</param>
+        /// <param name="log">if show detail log</param>
+        /// <param name="process">the process delegate</param>
+        /// <returns>the result</returns>
         public static Res excel2pdf(String src, String dst_f, int beg = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();
@@ -284,17 +365,18 @@ namespace io.vty.cswf.doc
             }
             return res;
         }
-
         /// <summary>
-        /// convert ppt to pdf
+        /// convert ppt to image
         /// </summary>
-        /// <param name="src">the ppt file path</param>
-        /// <param name="dst_f">the destinace out file path format path with sheet number ,like xxx-{0}.png</param>
-        /// <param name="filterName">the image filter name</param>
-        /// <param name="scaleWidth">the image width</param>
-        /// <param name="scaleHeight">the image height</param>
-        /// <param name="log">whether show detail log</param>
-        /// <returns>the number of slides</returns>
+        /// <param name="src">the source file</param>
+        /// <param name="dst_f">the destinace out file path formatiing with page number, like xxx-{0}.png</param>
+        /// <param name="beg">the begin number of format string</param>
+        /// <param name="filterName">the file name to image format</param>
+        /// <param name="scaleWidth">scale with</param>
+        /// <param name="scaleHeight">scale height</param>
+        /// <param name="log">if show detail log</param>
+        /// <param name="process">the process delegate</param>
+        /// <returns>the result</returns>
         public static Res ppt2img(String src, String dst_f, int beg = 0, string filterName = "png", int scaleWidth = 0, int scaleHeight = 0, bool log = false, OnProcess process = null)
         {
             //ILog L = Log.New();

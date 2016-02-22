@@ -49,13 +49,20 @@ namespace io.vty.cswf.doc
                 get; set;
             }
             /// <summary>
+            /// the progress url by string.format
+            /// </summary>
+            public string Progress
+            {
+                get; set;
+            }
+            /// <summary>
             /// exec the command ans append the result to Res
             /// </summary>
             /// <param name="res">the result</param>
             /// <param name="count">currnet count</param>
             /// <param name="spath">targe file path</param>
             /// <returns></returns>
-            public int exec(Res res, int count, string spath)
+            public int exec(Res res, int total, int count, string spath)
             {
                 var dst_f = string.Format(this.DstF, count);
                 string data = "";
@@ -76,6 +83,12 @@ namespace io.vty.cswf.doc
                     }
                     res.Files.Add(line);
                     added += 1;
+                }
+                if (this.Progress != null && this.Progress.Length > 0)
+                {
+                    var rate = ((float)count + 1) / ((float)total);
+                    L.D("Proc do progress notify to {0} with rate({1})", this.Progress, rate);
+                    H.doGet(this.Progress, rate);
                 }
                 L.D("Proc exec <{0} {1} {2} {3} {4}> done with {5} file added", this.Name, spath, dst_f, count, this.Args, added);
                 return added;
@@ -99,7 +112,7 @@ namespace io.vty.cswf.doc
         /// <param name="count">the current count</param>
         /// <param name="spath">the tart file path</param>
         /// <returns></returns>
-        public delegate int OnProcess(Res res, int count, string spath);
+        public delegate int OnProcess(Res res, int total, int count, string spath);
         /// <summary>
         /// the struct of result
         /// </summary>
@@ -183,7 +196,7 @@ namespace io.vty.cswf.doc
             }
             else
             {
-                count += process(res, count, rspath);
+                count += process(res, 1, count, rspath);
             }
             res.Count = count;
             L.D("executing exec by file({0}),destination format({1}) done with count({2})", as_src, as_dst_f, count);
@@ -240,7 +253,8 @@ namespace io.vty.cswf.doc
                 {
                     L.D("executing word2png by file({0}),destination format({1}) with {2} page found", as_src, as_dst_f, pane.Pages.Count);
                 }
-                for (var i = 1; i <= pane.Pages.Count; i++)
+                var total = pane.Pages.Count;
+                for (var i = 1; i <= total; i++) 
                 {
                     var spath = String.Format(as_dst_f, pages);
                     if (log)
@@ -270,7 +284,7 @@ namespace io.vty.cswf.doc
                     }
                     else
                     {
-                        pages += process(res, pages, rspath);
+                        pages += process(res, total, pages, rspath);
                     }
 
                 }
@@ -318,6 +332,7 @@ namespace io.vty.cswf.doc
                 app.Visible = true;
                 var books = app.Workbooks.Open(as_src, 0, true, 5, "", "",
                     true, excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+                var total = books.Worksheets.Count;
                 foreach (excel.Worksheet sheet in books.Worksheets)
                 {
                     var range = sheet.UsedRange;
@@ -345,7 +360,7 @@ namespace io.vty.cswf.doc
                     }
                     else
                     {
-                        sheets += process(res, sheets, rspath);
+                        sheets += process(res, total, sheets, rspath);
                     }
                 }
                 books.Close(true, null, null);
@@ -389,6 +404,7 @@ namespace io.vty.cswf.doc
             try
             {
                 var doc = app.Presentations.Open(as_src, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
+                var total = doc.Slides.Count;
                 foreach (ppt.Slide slide in doc.Slides)
                 {
                     var spath = String.Format(as_dst_f, slides);
@@ -405,7 +421,7 @@ namespace io.vty.cswf.doc
                     }
                     else
                     {
-                        slides += process(res, slides, rspath);
+                        slides += process(res, total, slides, rspath);
                     }
 
                 }

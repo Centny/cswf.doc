@@ -5,25 +5,25 @@ rmdir out
 mkdir out
 
 echo Testing doc2jpg...
-call cov_doc2jpg.bat xx.docx out\docx 480 rm
+call cov_doc2jpg.bat xx.docx out\docx 480 rm "http://127.0.0.1:8090/echo?tid=xa&process={0}"
 echo .
 echo .
 echo .
 
 echo Testing pdf2jpg...
-call cov_pdf2jpg.bat xx.pdf out\pdf 60
+call cov_pdf2jpg.bat xx.pdf out\pdf 60 " " "http://127.0.0.1:8090/echo?tid=xb&process={0}"
 echo .
 echo .
 echo .
 
 echo Testing ppt2jpg...
-call cov_ppt2jpg.bat xx.pptx out\ppt 480 rm
+call cov_ppt2jpg.bat xx.pptx out\ppt 480 rm "http://127.0.0.1:8090/echo?tid=xc&process={0}"
 echo .
 echo .
 echo .
 
 echo Testing xls2jpg...
-call cov_xls2jpg.bat xx.xlsx out\xls 80 rm
+call cov_xls2jpg.bat xx.xlsx out\xls 80 rm "http://127.0.0.1:8090/echo?tid=xd&process={0}"
 echo .
 echo .
 echo .

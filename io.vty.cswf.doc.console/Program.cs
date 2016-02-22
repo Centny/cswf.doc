@@ -26,6 +26,7 @@ namespace io.vty.cswf.doc.console
                 "   -exe_c <process executor>\n" +
                 "   -exe_f <process out file format>\n" +
                 "   -exe_a <process arguments>\n" +
+                "   -exe_p <progress url>" +
                 "   \n" +
                 " ppt options:\n" +
                 "   -f <filer name> the filter nam to output file, like png\n" +
@@ -49,10 +50,11 @@ namespace io.vty.cswf.doc.console
                 cargs.StringVal("f", out filter, "png");
                 cargs.IntVal("W", out width);
                 cargs.IntVal("h", out height);
-                string exe_c = "", exe_f = "", exe_a = "";
+                string exe_c = "", exe_f = "", exe_a = "", exe_p = "";
                 cargs.StringVal("exe_c", out exe_c);
                 cargs.StringVal("exe_f", out exe_f);
                 cargs.StringVal("exe_a", out exe_a);
+                cargs.StringVal("exe_p", out exe_p);
                 int beg = 0;
                 if (cargs.Vals.Count < 2)
                 {
@@ -64,6 +66,7 @@ namespace io.vty.cswf.doc.console
                 if (exe_c.Length > 0 && exe_f.Length > 0)
                 {
                     var exec = new Converter.Proc(exe_c, exe_f);
+                    exec.Progress = exe_p;
                     exec.Args = exe_a;
                     proc = exec.exec;
                 }

@@ -48,3 +48,5 @@ TestResults
 *.bak
 bin
 *.user
+build
+*.trx

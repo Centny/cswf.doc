@@ -75,8 +75,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /y ..\..\cov_* .
-mkdir test
-xcopy /y ..\..\..\io.vty.cswf.doc.test\test test</PostBuildEvent>
+mkdir ws
+mkdir ws\test
+xcopy /y ..\..\..\io.vty.cswf.doc.test\test ws\test</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

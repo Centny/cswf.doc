@@ -379,7 +379,7 @@ namespace io.vty.cswf.doc
             }
             catch (Exception e)
             {
-                L.E(e, "executing excel2pdf by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f);
+                L.E(e, "executing excel2pdf by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f, e.Message);
                 res.Code = 500;
                 throw e;
             }

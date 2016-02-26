@@ -1,6 +1,7 @@
 ﻿using System.Drawing.Imaging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 
 namespace io.vty.cswf.doc.test
 {
@@ -76,6 +77,12 @@ namespace io.vty.cswf.doc.test
             Assert.AreEqual(0, res.Code);
             Assert.AreEqual(2, res.Count);
             res.Save("exec1.json");
+        }
+
+        [TestMethod]
+        public void TestDirectory()
+        {
+            Assert.AreEqual("D:\\vs\\cswf.doc", Directory.GetParent("D:\\vs\\cswf.doc\\xx").FullName);
         }
     }
 }

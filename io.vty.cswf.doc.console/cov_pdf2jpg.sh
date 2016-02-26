@@ -20,7 +20,7 @@ if [ "$6" != "$7" ];then
 fi
 #print result
 echo
-echo ---------------------json-------------------------
+echo ---------------------result-------------------------
 echo
 echo
 echo [json]

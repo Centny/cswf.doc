@@ -27,6 +27,7 @@ namespace io.vty.cswf.doc.console
                 "   -exe_f <process out file format>\n" +
                 "   -exe_a <process arguments>\n" +
                 "   -exe_p <progress url>" +
+                "   -prefix <the trim prefix to out json>" +
                 "   \n" +
                 " ppt options:\n" +
                 "   -f <filer name> the filter nam to output file, like png\n" +
@@ -62,6 +63,7 @@ namespace io.vty.cswf.doc.console
                     Environment.ExitCode = 1;
                     return;
                 }
+                L.D("using exe by \n exe_c:{0}\n exe_f:{1}\n exe_a:{2}", exe_c, exe_f, exe_a);
                 Converter.OnProcess proc = null;
                 if (exe_c.Length > 0 && exe_f.Length > 0)
                 {
@@ -92,6 +94,11 @@ namespace io.vty.cswf.doc.console
                     Usage();
                     Environment.ExitCode = 1;
                     return;
+                }
+                string prefix = "";
+                if (cargs.StringVal("prefix", out prefix))
+                {
+                    res.Trim(prefix);
                 }
                 string json = "";
                 if (cargs.StringVal("o", out json))

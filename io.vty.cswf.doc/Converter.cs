@@ -64,12 +64,14 @@ namespace io.vty.cswf.doc
             /// <returns></returns>
             public int exec(Res res, int total, int count, string spath)
             {
-                var dst_f = string.Format(this.DstF, count);
                 string data = "";
-                var code = util.Exec.exec(out data, this.Name, spath, dst_f, string.Format("{0}", count), this.Args);
+                var dst_f = string.Format(this.DstF, spath, count);
+                L.D("Proc start exec <{0} {1} {2}>", this.Name, dst_f, this.Args);
+                var code = Exec.exec(out data, this.Name, dst_f, this.Args);
                 if (code != 0)
                 {
-                    throw new Exception(string.Format("exec {0} fail with exit code({1})", this.Name, code));
+                    L.E("Proc exec <{0} {1} {2}> fail({3}) with result->\n{4}", this.Name, dst_f, this.Args, code, data);
+                    throw new Exception(string.Format("Proc exec <{0}> fail with exit code({1})", this.Name, code));
                 }
                 data = data.Trim();
                 var lines = data.Split('\n');
@@ -90,7 +92,7 @@ namespace io.vty.cswf.doc
                     L.D("Proc do progress notify to {0} with rate({1})", this.Progress, rate);
                     H.doGet(this.Progress, rate);
                 }
-                L.D("Proc exec <{0} {1} {2} {3} {4}> done with {5} file added", this.Name, spath, dst_f, count, this.Args, added);
+                L.D("Proc exec <{0} {1} {2}> done with {3} file added", this.Name, dst_f, this.Args, added);
                 return added;
             }
             /// <summary>
@@ -169,6 +171,13 @@ namespace io.vty.cswf.doc
                 using (var sw = new StreamWriter(json))
                 {
                     sw.Write(Json.stringify(this));
+                }
+            }
+            public void Trim(string prefix)
+            {
+                for (var i = 0; i < this.Files.Count; i++)
+                {
+                    this.Files[i] = this.Files[i].Replace(prefix, "");
                 }
             }
         }
@@ -254,7 +263,7 @@ namespace io.vty.cswf.doc
                     L.D("executing word2png by file({0}),destination format({1}) with {2} page found", as_src, as_dst_f, pane.Pages.Count);
                 }
                 var total = pane.Pages.Count;
-                for (var i = 1; i <= total; i++) 
+                for (var i = 1; i <= total; i++)
                 {
                     var spath = String.Format(as_dst_f, pages);
                     if (log)

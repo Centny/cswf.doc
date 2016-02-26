@@ -50,13 +50,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="cov_doc2jpg.bat" />
-    <None Include="cov_pdf2jpg.bat" />
-    <None Include="cov_pdf2jpg_c.bat" />
-    <None Include="cov_png2jpg.bat" />
-    <None Include="cov_ppt2jpg.bat" />
-    <None Include="cov_all_test.bat" />
-    <None Include="cov_xls2jpg.bat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\cswf\io.vty.cswf\io.vty.cswf.csproj">
@@ -75,9 +68,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /y ..\..\cov_* .
-mkdir ws
-mkdir ws\test
-xcopy /y ..\..\..\io.vty.cswf.doc.test\test ws\test</PostBuildEvent>
+mkdir test
+xcopy /y ..\..\..\io.vty.cswf.doc.test\test test</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

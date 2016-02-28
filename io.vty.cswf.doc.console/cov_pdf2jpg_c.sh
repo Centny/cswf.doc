@@ -2,7 +2,7 @@
 set -e
 export PATH=`pwd`:`dirname ${0}`:$PATH
 mkdir -p `dirname $2`
-convert -density $3 -quality 100 $1 $2_%d.jpg
+convert -density $3 -quality 100 $1 $2_%04d.jpg
 ls -a $2_*.jpg
 if [ "$4" == "rm" ];then
   rm -f $1

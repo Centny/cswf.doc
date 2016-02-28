@@ -12,7 +12,7 @@ out_w=$7
 out_f=`dirname $out_w/$out_n`
 #run converter
 mkdir -p `dirname $tmp_f`
-cswf-doc -l -o $tmp_j -exe_c "bash" -exe_f " -c 'cov_png2jpg.sh {0} $tmp_f-{1}.jpg $3 $4'" -exe_p $5 -prefix $tmp_w/ws/ -p $1 $tmp_f-{0}.png
+cswf-doc -l -o $tmp_j -exe_c "bash" -exe_f " -c 'cov_png2jpg.sh {0} \"$tmp_f\"_{1}.jpg $3 $4'" -exe_p $5 -prefix $tmp_w/ws/ -p $1 $tmp_f-{0}.png
 #copy file to out
 mkdir -p $out_f
 if [ "$6" != "$7" ];then

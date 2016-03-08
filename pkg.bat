@@ -3,6 +3,7 @@ del /Q /S build
 mkdir build
 mkdir build\cswf.doc
 mkdir build\cswf.doc\test
+call VsMSBuildCmd
 msbuild io.vty.cswf.doc.sln /property:Configuration="Release" /t:clean /t:build
 xcopy io.vty.cswf.doc.console\bin\Release\cov_*.sh  build\cswf.doc
 xcopy io.vty.cswf.doc.console\bin\Release\cswf-doc.exe*  build\cswf.doc

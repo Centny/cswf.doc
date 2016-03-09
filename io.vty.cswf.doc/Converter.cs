@@ -372,7 +372,7 @@ namespace io.vty.cswf.doc
                         sheets += process(res, total, sheets, rspath);
                     }
                 }
-                books.Close(true, null, null);
+                books.Close(false, null, null);
                 L.D("executing excel2pdf by file({0}),destination format({1}) done with sheets({2})", as_src, as_dst_f, sheets);
                 res.Code = 0;
                 res.Count = sheets;

@@ -33,3 +33,10 @@ echo
 echo
 echo
 
+
+echo Testing xls2jpg2...
+cov_xls2jpg.sh test/xx1.xls test/xls1 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+echo
+echo
+echo
+

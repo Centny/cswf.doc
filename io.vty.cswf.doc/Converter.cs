@@ -13,6 +13,7 @@ using io.vty.cswf.util;
 using System.Windows.Forms;
 using System.Threading;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace io.vty.cswf.doc
 {
@@ -24,6 +25,8 @@ namespace io.vty.cswf.doc
         [DllImport("User32.dll")]
         static extern int SetForegroundWindow(IntPtr point);
 
+        [DllImport("user32.dll")]
+        static extern int GetWindowThreadProcessId(int hWnd, out int lpdwProcessId);
         /// <summary>
         /// the log
         /// </summary>
@@ -237,6 +240,7 @@ namespace io.vty.cswf.doc
             var pages = beg;
             L.D("executing word2png by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new word.Application();
+            Process proc = null;
             try
             {
                 app.Visible = true;
@@ -251,6 +255,16 @@ namespace io.vty.cswf.doc
                     doc.Close(false);
                     res.Code = 404;
                     return res;
+                }
+                try
+                {
+                    int procid = 0;
+                    GetWindowThreadProcessId(app.ActiveWindow.Hwnd, out procid);
+                    proc = Process.GetProcessById(procid);
+                }
+                catch (Exception e)
+                {
+                    L.W(e, "executing word2png by file({0}),destination format({1}) get process error->{2}", as_src, as_dst_f, e.Message);
                 }
                 word.Window window = doc.Windows[1];
                 //foreach (word.Window window in doc.Windows)
@@ -310,6 +324,7 @@ namespace io.vty.cswf.doc
                 L.D("executing word2png by file({0}),destination format({1}) done with pages({2})", as_src, as_dst_f, pages);
                 res.Code = 0;
                 res.Count = pages;
+                
                 for (int i = 0; i < 100; i++)
                 {
                     try
@@ -325,16 +340,29 @@ namespace io.vty.cswf.doc
                         SendKeys.SendWait("\n\n");
                     }
                 }
+                app.Quit(false);
             }
             catch (Exception e)
             {
                 L.E(e, "executing word2png by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f, e.Message);
                 res.Code = 500;
+                app.Quit(false);
                 throw e;
             }
             finally
             {
-                app.Quit(false);
+                try
+                {
+                    while (proc != null && !proc.HasExited)
+                    {
+                        Thread.Sleep(1000);
+                        proc.Kill();
+                    }
+                }
+                catch (Exception e)
+                {
+                    L.W(e, "executing word2png by file({0}),destination format({1}) kill process error->{2}", as_src, as_dst_f, e.Message);
+                }
             }
             return res;
         }
@@ -357,12 +385,21 @@ namespace io.vty.cswf.doc
             var sheets = beg;
             L.D("executing excel2pdf by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new excel.Application();
+            Process proc = null;
             try
             {
                 app.Visible = true;
                 var books = app.Workbooks.Open(as_src, 0, true, 5, "", "",
                     true, excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
                 var total = books.Worksheets.Count;
+                try {
+                    int procid = 0;
+                    GetWindowThreadProcessId(app.ActiveWindow.Hwnd, out procid);
+                    proc = Process.GetProcessById(procid);
+                }catch(Exception e)
+                {
+                    L.W(e, "executing excel2pdf by file({0}),destination format({1}) get process error->{2}", as_src, as_dst_f, e.Message);
+                }
                 foreach (excel.Worksheet sheet in books.Worksheets)
                 {
                     var range = sheet.UsedRange;
@@ -411,6 +448,7 @@ namespace io.vty.cswf.doc
                         SendKeys.SendWait("\n\n");
                     }
                 }
+                app.Quit();
             }
             catch (Exception e)
             {
@@ -420,7 +458,18 @@ namespace io.vty.cswf.doc
             }
             finally
             {
-                app.Quit();
+                try
+                {
+                    while (proc != null && !proc.HasExited)
+                    {
+                        Thread.Sleep(1000);
+                        proc.Kill();
+                    }
+                }
+                catch (Exception e)
+                {
+                    L.W(e, "executing excel2pdf by file({0}),destination format({1}) kill process error->{2}", as_src, as_dst_f, e.Message);
+                }
             }
             return res;
         }
@@ -445,9 +494,20 @@ namespace io.vty.cswf.doc
             var slides = beg;
             L.D("executing ppt2img by file({0}),destination format({1})", as_src, as_dst_f);
             var app = new ppt.Application();
+            Process proc = null;
             try
             {
                 var doc = app.Presentations.Open(as_src, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
+                try
+                {
+                    int procid = 0;
+                    GetWindowThreadProcessId(app.HWND, out procid);
+                    proc = Process.GetProcessById(procid);
+                }
+                catch (Exception e)
+                {
+                    L.W(e, "executing ppt2img by file({0}),destination format({1}) get process error->{2}", as_src, as_dst_f, e.Message);
+                }
                 var total = doc.Slides.Count;
                 foreach (ppt.Slide slide in doc.Slides)
                 {
@@ -472,16 +532,29 @@ namespace io.vty.cswf.doc
                 L.D("executing ppt2img by file({0}),destination format({1}) done with slides({2})", as_src, as_dst_f, slides);
                 res.Code = 0;
                 res.Count = slides;
+                app.Quit();
             }
             catch (Exception e)
             {
                 L.E(e, "executing ppt2img by file({0}),destination format({1}) done with error->{2}", as_src, as_dst_f, e.Message);
                 res.Code = 500;
+                app.Quit();
                 throw e;
             }
             finally
             {
-                app.Quit();
+                try
+                {
+                    while (proc != null && !proc.HasExited)
+                    {
+                        Thread.Sleep(1000);
+                        proc.Kill();
+                    }
+                }
+                catch (Exception e)
+                {
+                    L.W(e, "executing ppt2img by file({0}),destination format({1}) kill process error->{2}", as_src, as_dst_f, e.Message);
+                }
             }
             return res;
         }

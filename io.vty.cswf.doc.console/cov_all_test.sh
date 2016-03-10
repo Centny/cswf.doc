@@ -58,3 +58,14 @@ echo
 echo
 echo
 
+echo Testing xls2jpg3...
+cov_xls2jpg.sh test/xx2.xls test/xls2 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+echo
+echo
+echo
+
+echo Testing xls2jpg4...
+#cov_xls2jpg.sh test/xx3.xls test/xls3 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+echo
+echo
+echo

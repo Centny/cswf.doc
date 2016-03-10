@@ -10,6 +10,9 @@ using Microsoft.Office.Core;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using io.vty.cswf.util;
+using System.Windows.Forms;
+using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace io.vty.cswf.doc
 {
@@ -18,6 +21,9 @@ namespace io.vty.cswf.doc
     /// </summary>
     public class Converter
     {
+        [DllImport("User32.dll")]
+        static extern int SetForegroundWindow(IntPtr point);
+
         /// <summary>
         /// the log
         /// </summary>
@@ -236,6 +242,7 @@ namespace io.vty.cswf.doc
                 app.Visible = true;
                 var doc = app.Documents.Open(as_src, false, true);
                 doc.ShowGrammaticalErrors = false;
+                doc.PrintFormsData = false;
                 //doc.ShowRevisions = false;
                 doc.ShowSpellingErrors = false;
                 if (doc.Windows.Count < 1)
@@ -301,9 +308,23 @@ namespace io.vty.cswf.doc
                 //}
                 //}
                 L.D("executing word2png by file({0}),destination format({1}) done with pages({2})", as_src, as_dst_f, pages);
-                doc.Close(false);
                 res.Code = 0;
                 res.Count = pages;
+                for (int i = 0; i < 100; i++)
+                {
+                    try
+                    {
+                        doc.Close(false);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        L.W(e, "executing word2png by file({0}),destination format({1}) closing error->{2}", as_src, as_dst_f, e.Message);
+                        SetForegroundWindow(new IntPtr(app.ActiveWindow.Hwnd));
+                        app.Activate();
+                        SendKeys.SendWait("\n\n");
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -313,7 +334,7 @@ namespace io.vty.cswf.doc
             }
             finally
             {
-                app.Quit();
+                app.Quit(false);
             }
             return res;
         }
@@ -372,10 +393,24 @@ namespace io.vty.cswf.doc
                         sheets += process(res, total, sheets, rspath);
                     }
                 }
-                books.Close(false, null, null);
                 L.D("executing excel2pdf by file({0}),destination format({1}) done with sheets({2})", as_src, as_dst_f, sheets);
                 res.Code = 0;
                 res.Count = sheets;
+                for (int i = 0; i < 100; i++)
+                {
+                    try
+                    {
+                        books.Close(false, null, null);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        L.E(e, "executing excel2pdf by file({0}),destination format({1}) closing error->{2}", as_src, as_dst_f, e.Message);
+                        SetForegroundWindow(new IntPtr(app.ActiveWindow.Hwnd));
+                        app.ActiveWindow.Activate();
+                        SendKeys.SendWait("\n\n");
+                    }
+                }
             }
             catch (Exception e)
             {

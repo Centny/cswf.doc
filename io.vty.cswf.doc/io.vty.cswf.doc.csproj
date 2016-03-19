@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Emgu.CV.World">
+      <HintPath>C:\Emgu\emgucv-windesktop 3.1.0.2282\bin\Emgu.CV.World.dll</HintPath>
+    </Reference>
+    <Reference Include="Magick.NET-Q16-AnyCPU">
+      <HintPath>..\..\Magick.NET\net40-client\Magick.NET\Magick.NET-Q16-AnyCPU.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -44,8 +50,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Converter.cs" />
+    <Compile Include="CovProc.cs" />
+    <Compile Include="DocCov.cs" />
+    <Compile Include="ExcelCov.cs" />
+    <Compile Include="ImgCov.cs" />
+    <Compile Include="PdfCov.cs" />
+    <Compile Include="PowerPointCov.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CovRes.cs" />
+    <Compile Include="WordCov.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Microsoft.Office.Core">

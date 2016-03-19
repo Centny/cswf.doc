@@ -23,10 +23,6 @@ namespace io.vty.cswf.doc.console
                 " common options:\n" +
                 "   -l show detail log\n" +
                 "   -o <json result>\n" +
-                "   -exe_c <process executor>\n" +
-                "   -exe_f <process out file format>\n" +
-                "   -exe_a <process arguments>\n" +
-                "   -exe_p <progress url>" +
                 "   -prefix <the trim prefix to out json>" +
                 "   \n" +
                 " ppt options:\n" +
@@ -37,6 +33,18 @@ namespace io.vty.cswf.doc.console
         }
         static void Main(string[] args)
         {
+            TaskPool.Shared.MaximumConcurrency = 10;
+            WordCov cov = new WordCov("test\\xx.docx", "docx-{0}.jpg");
+            cov.Exec();
+            foreach (var e in cov.Fails)
+            {
+                Console.WriteLine(e.Message);
+                Console.WriteLine(e.StackTrace);
+                Console.WriteLine("--->\n");
+            }
+            //Assert.AreEqual(0, cov.Fails.Count);
+            WordCov.Cached.Clear();
+            /*
             ILog L = Log.New();//for inintial logger.
             try
             {
@@ -114,6 +122,7 @@ namespace io.vty.cswf.doc.console
                 Environment.ExitCode = 1;
             }
             L.D("do converter done...");
+            */
         }
     }
 }

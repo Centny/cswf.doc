@@ -21,6 +21,7 @@ namespace io.vty.cswf.doc
         {
             public Application App;
             public Document Doc;
+            public int Pid;
             public Word(Application app)
             {
                 this.App = app;
@@ -31,7 +32,7 @@ namespace io.vty.cswf.doc
                 try
                 {
                     this.App.Quit();
-                    ProcKiller.DelRunning(CovProc.GetWindowThreadProcessId(this.App.ActiveWindow.Hwnd));
+                    ProcKiller.DelRunning(this.Pid);
                 }
                 catch (Exception e)
                 {
@@ -61,7 +62,8 @@ namespace io.vty.cswf.doc
                     app.Doc.ShowGrammaticalErrors = false;
                     app.Doc.PrintFormsData = false;
                     app.Doc.ShowSpellingErrors = false;
-                    ProcKiller.AddRunning(CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd));
+                    app.Pid = CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd);
+                    ProcKiller.AddRunning(app.Pid);
                 }
                 finally
                 {
@@ -161,32 +163,40 @@ namespace io.vty.cswf.doc
             this.Cdl.add();
             TaskPool.Queue(i =>
             {
-                if (this.Fails.Count > 0)
-                {
-                    this.Cdl.done();
-                    return;
-                }
-                try
-                {
-                    L.D("executing word2png by file({0}),destination format({1}) to convert", this.AsSrc, this.AsDstF, this.Result.Count);
-                    var tidx = (int)i;
-                    this.Total[tidx] = 1;
-                    var buf = new MemoryStream(bits);
-                    var img = new Bitmap(buf);
-                    buf.Dispose();
-                    Util.SaveThumbnail(img, String.Format(this.AsDstF, pages), this.MaxWidth, this.MaxHeight, true, true, ".JPG");
-                    this.Result.Count += 1;
-                    this.Result.Files.Add(String.Format(this.DstF, pages));
-                    this.Done[tidx] = 1;
-                    this.OnDone();
-                }
-                catch (Exception e)
-                {
-                    this.Fails.Add(e);
-                }
-                this.Cdl.done();
+                this.RunWord2imgProc(bits, idx, pages);
             }, idx);
             return 1;
+        }
+
+        protected void RunWord2imgProc(byte[] bits, int tidx, int pages)
+        {
+            if (this.Fails.Count > 0)
+            {
+                this.Cdl.done();
+                return;
+            }
+            try
+            {
+                var as_dst = String.Format(this.AsDstF, pages);
+                if (this.ShowLog)
+                {
+                    L.D("word2img parsing file({0},{1}) to {2}", this.AsSrc, pages, as_dst);
+                }
+                this.Total[tidx] = 1;
+                var buf = new MemoryStream(bits);
+                var img = new Bitmap(buf);
+                buf.Dispose();
+                Util.SaveThumbnail(img, as_dst, this.MaxWidth, this.MaxHeight, true, true, ".JPG");
+                this.Result.Count += 1;
+                this.Result.Files.Add(String.Format(this.DstF, pages));
+                this.Done[tidx] = 1;
+                this.OnDone();
+            }
+            catch (Exception e)
+            {
+                this.Fails.Add(e);
+            }
+            this.Cdl.done();
         }
     }
 }

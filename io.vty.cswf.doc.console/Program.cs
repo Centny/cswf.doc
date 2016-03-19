@@ -12,90 +12,77 @@ namespace io.vty.cswf.doc.console
 {
     class Program
     {
+        static readonly ILog L = Log.New(); //for inintial logger.
         static void Usage()
         {
             Console.WriteLine("Usage:\n" +
                 "   cswf-doc <options> -w <word file> <image path format>   convert word document to image\n" +
                 "   cswf-doc <options> -e <excel file> <pdf path format>    convert excel doucmnet to pdf\n" +
                 "   cswf-doc <options> -p <ppt file> <image path format>    convert ppt doucmnet to image\n" +
-                "   cswf-doc <options> -x <source file> <destiance format>  exec something\n" +
+                "   cswf-doc <options> -pdf <pdf file> <image path format>    convert pdf doucmnet to image\n" +
+                "   cswf-doc <options> -i <image> <image path format>    convert image to image\n" +
                 "   \n" +
                 " common options:\n" +
                 "   -l show detail log\n" +
                 "   -o <json result>\n" +
                 "   -prefix <the trim prefix to out json>" +
-                "   \n" +
-                " ppt options:\n" +
-                "   -f <filer name> the filter nam to output file, like png\n" +
-                "   -W <width>  the output image width\n" +
-                "   -H <height>  the output image height\n"
+                "   -w <width>  the output image width\n" +
+                "   -h <height>  the output image height\n" +
+                "   -dx <density x>  the read pdf density x\n" +
+                "   -dy <density y>  the read pdf density y\n" +
+                "   -beg <begin>  the begin int\n" +
+                "   -maxc <maximum concurrency>  the maximum concurrency to convert\n"
                 );
         }
         static void Main(string[] args)
         {
-            TaskPool.Shared.MaximumConcurrency = 10;
-            WordCov cov = new WordCov("test\\xx.docx", "docx-{0}.jpg");
-            cov.Exec();
-            foreach (var e in cov.Fails)
-            {
-                Console.WriteLine(e.Message);
-                Console.WriteLine(e.StackTrace);
-                Console.WriteLine("--->\n");
-            }
-            //Assert.AreEqual(0, cov.Fails.Count);
-            WordCov.Cached.Clear();
-            /*
-            ILog L = Log.New();//for inintial logger.
             try
             {
-                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l", "x" }, args, 0);
+                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l", "pdf" }, args, 0);
                 var log = cargs.Exist("l");
                 var w = cargs.Exist("w");
                 var e = cargs.Exist("e");
                 var p = cargs.Exist("p");
-                var x = cargs.Exist("x");
-                string filter = "";
+                var pdf = cargs.Exist("pdf");
+                var i = cargs.Exist("i");
                 int width, height;
-                cargs.StringVal("f", out filter, "png");
-                cargs.IntVal("W", out width);
-                cargs.IntVal("h", out height);
-                string exe_c = "", exe_f = "", exe_a = "", exe_p = "";
-                cargs.StringVal("exe_c", out exe_c);
-                cargs.StringVal("exe_f", out exe_f);
-                cargs.StringVal("exe_a", out exe_a);
-                cargs.StringVal("exe_p", out exe_p);
+                cargs.IntVal("W", out width, 768);
+                cargs.IntVal("h", out height, 1024);
+                double densityx, densityy;
+                cargs.DoubleVal("dx", out densityx, 96);
+                cargs.DoubleVal("dy", out densityy, 96);
                 int beg = 0;
+                cargs.IntVal("beg", out beg, 0);
+                int maxc;
+                cargs.IntVal("maxc", out maxc, 16);
+                TaskPool.Shared.MaximumConcurrency = maxc;
                 if (cargs.Vals.Count < 2)
                 {
                     Usage();
                     Environment.ExitCode = 1;
                     return;
                 }
-                L.D("using exe by \n exe_c:{0}\n exe_f:{1}\n exe_a:{2}", exe_c, exe_f, exe_a);
-                Converter.OnProcess proc = null;
-                if (exe_c.Length > 0 && exe_f.Length > 0)
-                {
-                    var exec = new Converter.Proc(exe_c, exe_f);
-                    exec.Progress = exe_p;
-                    exec.Args = exe_a;
-                    proc = exec.exec;
-                }
-                Converter.Res res;
+                L.D("cswf-doc is starting...");
+                CovProc cov;
                 if (w)
                 {
-                    res = Converter.word2img(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
+                    cov = new WordCov(cargs.Vals[0], cargs.Vals[1], width, height, beg);
                 }
                 else if (e)
                 {
-                    res = Converter.excel2pdf(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
+                    cov = new ExcelCov(cargs.Vals[0], cargs.Vals[1], width, height, densityx, densityy, beg);
                 }
                 else if (p)
                 {
-                    res = Converter.ppt2img(cargs.Vals[0], cargs.Vals[1], beg, filter, width, height, log, proc);
+                    cov = new PowerPointCov(cargs.Vals[0], cargs.Vals[1], beg);
                 }
-                else if (x)
+                else if (pdf)
                 {
-                    res = Converter.exec(cargs.Vals[0], cargs.Vals[1], beg, log, proc);
+                    cov = new PdfCov(cargs.Vals[0], cargs.Vals[1], width, height, densityx, densityy, beg);
+                }
+                else if (i)
+                {
+                    cov = new ImgCov(cargs.Vals[0], cargs.Vals[1], width, height, beg);
                 }
                 else
                 {
@@ -103,6 +90,10 @@ namespace io.vty.cswf.doc.console
                     Environment.ExitCode = 1;
                     return;
                 }
+                cov.ShowLog = log;
+                cov.Exec();
+                cov.Dispose();
+                var res = cov.Result;
                 string prefix = "";
                 if (cargs.StringVal("prefix", out prefix))
                 {
@@ -118,11 +109,15 @@ namespace io.vty.cswf.doc.console
             }
             catch (Exception e)
             {
-                L.E(e, "do converter error by args({0})", String.Join(",", args));
+                L.E(e, "do converter error by args({0})->", String.Join(",", args), e.Message);
                 Environment.ExitCode = 1;
             }
+            finally
+            {
+                WordCov.Cached.Clear();
+                ExcelCov.Cached.Clear();
+            }
             L.D("do converter done...");
-            */
         }
     }
 }

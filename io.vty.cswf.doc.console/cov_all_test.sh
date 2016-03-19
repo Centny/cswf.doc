@@ -10,62 +10,62 @@ rm -rf out tmp
 # echo
 
 echo Testing doc2jpg...
-cov_doc2jpg.sh test/xx.docx test/doc 480 rm "http://127.0.0.1:8090/echo?tid=xa&process={0}" tmp out
+cswf-doc -w -l test/xx.docx test/doc-{0}.jpg
 echo
 echo
 echo
 
 echo Testing doc2jpg1...
-cov_doc2jpg.sh test/xx1.doc test/doc1 480 rm "http://127.0.0.1:8090/echo?tid=xa&process={0}" tmp out
+cswf-doc -w -l test/xx1.doc test/doc1-{0}.jpg
 echo
 echo
 echo
 
 echo Testing doc2jpg2...
-cov_doc2jpg.sh test/xx2.doc test/doc2 480 rm "http://127.0.0.1:8090/echo?tid=xa&process={0}" tmp out
+cswf-doc -w -l test/xx2.doc test/doc2-{0}.jpg
 echo
 echo
 echo
 
 echo Testing pdf2jpg...
-cov_pdf2jpg.sh test/xx.pdf test/pdf 60 no "http://127.0.0.1:8090/echo?tid=xb&process={0}" tmp out
+cswf-doc -pdf -l test/xx.pdf test/pdf-{0}.jpg
 echo
 echo
 echo
 
 echo Testing ppt2jpg...
-cov_ppt2jpg.sh test/xx.pptx test/ppt 480 rm "http://127.0.0.1:8090/echo?tid=xc&process={0}" tmp out
+cswf-doc -p -l test/xx.pptx test/pptx-{0}.jpg
 echo
 echo
 echo
 
 echo Testing ppt2jpg2...
-cov_ppt2jpg.sh test/xx1.ppt test/ppt1 480 rm "http://127.0.0.1:8090/echo?tid=xc&process={0}" tmp out
+cswf-doc -p -l test/xx1.ppt test/ppt1-{0}.jpg
 echo
 echo
 echo
 
 echo Testing xls2jpg...
-cov_xls2jpg.sh test/xx.xlsx test/xls 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+cswf-doc -e -l test/xx.xlsx test/xlsx-{0}.jpg
 echo
 echo
 echo
 
 
 echo Testing xls2jpg2...
-cov_xls2jpg.sh test/xx1.xls test/xls1 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+cswf-doc -e -l test/xx1.xls test/xls1-{0}.jpg
 echo
 echo
 echo
 
 echo Testing xls2jpg3...
-cov_xls2jpg.sh test/xx2.xls test/xls2 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+cswf-doc -e -l test/xx2.xls test/xls2-{0}.jpg
 echo
 echo
 echo
 
 echo Testing xls2jpg4...
-#cov_xls2jpg.sh test/xx3.xls test/xls3 80 "rm" "http://127.0.0.1:8090/echo?tid=xd&process={0}" tmp out
+#cswf-doc -e -l test/xx3.xls test/xls3-{0}.jpg
 echo
 echo
 echo

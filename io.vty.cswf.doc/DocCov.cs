@@ -124,20 +124,24 @@ namespace io.vty.cswf.doc
         protected virtual CovProc RunSupported(String tid, SupportedL sp, FCfg cfg, Args args, String src, String dst_f)
         {
             CovProc cov = null;
+            String prefix = "";
             int maxw, maxh;
             switch (sp)
             {
                 case SupportedL.Word:
                     args.IntVal(3, out maxw, 768);
                     args.IntVal(4, out maxh, 1024);
+                    args.StringVal(5, out prefix, "");
                     cov = new WordCov(src, dst_f, maxw, maxh);
                     break;
                 case SupportedL.Excel:
                     args.IntVal(3, out maxw, 768);
                     args.IntVal(4, out maxh, 1024);
+                    args.StringVal(5, out prefix, "");
                     cov = new ExcelCov(src, dst_f, maxw, maxh, cfg.Val("density_x", 96), cfg.Val("density_y", 96));
                     break;
                 case SupportedL.PowerPoint:
+                    args.StringVal(3, out prefix, "");
                     cov = new PowerPointCov(src, dst_f);
                     break;
                 default:
@@ -147,6 +151,10 @@ namespace io.vty.cswf.doc
             cov.Proc = this.OnCovProc;
             cov.Exec();
             cov.Dispose();
+            if (prefix.Length > 0)
+            {
+                cov.Result.Trim(prefix);
+            }
             return cov;
         }
 

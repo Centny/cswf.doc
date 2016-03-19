@@ -78,31 +78,40 @@ namespace io.vty.cswf.doc
             this.Cdl.add();
             TaskPool.Queue(args =>
             {
-                try
-                {
-                    image.BackgroundColor = new MagickColor(Color.White);
-                    image.HasAlpha = false;
-                    image.Resize(size);
-                    image.Write(String.Format(this.AsDstF, file_c + i));
-                    this.Result.Count += 1;
-                    this.Result.Files.Add(String.Format(this.DstF, file_c + i));
-                    if (idx < 0)
-                    {
-                        this.Done[i] = 1;
-                    }
-                    else
-                    {
-                        this.Done[idx] += 1;
-                    }
-                    this.OnDone();
-                }
-                catch (Exception e)
-                {
-                    this.Result.Code = 500;
-                    this.Fails.Add(e);
-                }
-                this.Cdl.done();
+                this.RunPdf2imgProc(image, idx, i, file_c);
             }, 0);
+        }
+        private void RunPdf2imgProc(MagickImage image, int idx, int i, int file_c)
+        {
+            try
+            {
+                var as_dst = String.Format(this.AsDstF, file_c + i);
+                if (this.ShowLog)
+                {
+                    L.D("pdf2img parsing file({0},{1}) to {2}", this.AsSrc, file_c + i, as_dst);
+                }
+                image.BackgroundColor = new MagickColor(Color.White);
+                image.HasAlpha = false;
+                image.Resize(size);
+                image.Write(as_dst);
+                this.Result.Count += 1;
+                this.Result.Files.Add(String.Format(this.DstF, file_c + i));
+                if (idx < 0)
+                {
+                    this.Done[i] = 1;
+                }
+                else
+                {
+                    this.Done[idx] += 1;
+                }
+                this.OnDone();
+            }
+            catch (Exception e)
+            {
+                this.Result.Code = 500;
+                this.Fails.Add(e);
+            }
+            this.Cdl.done();
         }
     }
 }

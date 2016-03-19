@@ -20,6 +20,7 @@ namespace io.vty.cswf.doc
         {
             public Application App;
             public Workbook Book;
+            public int Pid;
             public Excel(Application app)
             {
                 this.App = app;
@@ -30,7 +31,7 @@ namespace io.vty.cswf.doc
                 try
                 {
                     this.App.Quit();
-                    ProcKiller.DelRunning(CovProc.GetWindowThreadProcessId(this.App.ActiveWindow.Hwnd));
+                    ProcKiller.DelRunning(this.Pid);
                 }
                 catch (Exception e)
                 {
@@ -56,7 +57,8 @@ namespace io.vty.cswf.doc
                     app.App.Visible = true;
                     app.Book = app.App.Workbooks.Open(src, 0, true, 5, "", "",
                         true, XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-                    ProcKiller.AddRunning(CovProc.GetWindowThreadProcessId(app.App.ActiveWindow.Hwnd));
+                    app.Pid = CovProc.GetWindowThreadProcessId(app.App.ActiveWindow.Hwnd);
+                    ProcKiller.AddRunning(app.Pid);
                 }
                 finally
                 {
@@ -142,6 +144,10 @@ namespace io.vty.cswf.doc
             var pdf = Path.GetTempFileName() + ".pdf";
             try
             {
+                if (this.ShowLog)
+                {
+                    L.D("excel2pdf parsing file({0},{1}) to {1}", this.AsSrc, idx, pdf);
+                }
                 sheet.ExportAsFixedFormat(XlFixedFormatType.xlTypePDF, pdf);
                 var images = new MagickImageCollection();
                 this.Images.Add(images);

@@ -36,7 +36,7 @@ namespace io.vty.cswf.doc.test
                     this.do_err = true;
                     throw new Exception("error");
                 }
-                if (this.rate > rate)
+                if (this.rate > rate || rate == float.NaN)
                 {
                     throw new Exception("rate fail");
                 }
@@ -60,6 +60,7 @@ namespace io.vty.cswf.doc.test
             {
                 Thread.Sleep(500);
             }
+
             var data_ = cov.done as IDictionary<string, object>;
             var data = new Dict(data_);
             Assert.AreEqual(0, data.Val("code", -1));

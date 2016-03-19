@@ -4,6 +4,7 @@ using io.vty.cswf.util;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,8 @@ namespace io.vty.cswf.doc
             {
                 this.Total = new int[pages];
                 this.Done = new int[pages];
+                Util.set(this.Total, 1);
+                Util.set(this.Done, 0);
             }
             else
             {
@@ -64,11 +67,6 @@ namespace io.vty.cswf.doc
             }
             for (var i = 0; i < pages; i++)
             {
-                if (idx < 0)
-                {
-                    this.Total[i] = 1;
-                }
-
                 this.Pdf2imgProc(images[i], idx, i, file_c);
             }
             return pages;
@@ -86,6 +84,11 @@ namespace io.vty.cswf.doc
             try
             {
                 var as_dst = String.Format(this.AsDstF, file_c + i);
+                var as_dir = Path.GetDirectoryName(as_dst);
+                if (!Directory.Exists(as_dir))
+                {
+                    Directory.CreateDirectory(as_dir);
+                }
                 if (this.ShowLog)
                 {
                     L.D("pdf2img parsing file({0},{1}) to {2}", this.AsSrc, file_c + i, as_dst);

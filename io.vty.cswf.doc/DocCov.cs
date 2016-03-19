@@ -18,7 +18,9 @@ namespace io.vty.cswf.doc
             None = 0,
             Word = 1,
             Excel = 2,
-            PowerPoint = 3
+            PowerPoint = 3,
+            Pdf = 4,
+            Img=5,
         }
         public static SupportedL parseSupported(String key)
         {
@@ -33,6 +35,14 @@ namespace io.vty.cswf.doc
             else if ("PowerPoint".Equals(key))
             {
                 return SupportedL.PowerPoint;
+            }
+            else if ("Pdf".Equals(key))
+            {
+                return SupportedL.Pdf;
+            }
+            else if ("Img".Equals(key))
+            {
+                return SupportedL.Img;
             }
             else
             {
@@ -52,6 +62,12 @@ namespace io.vty.cswf.doc
             this.builder = builder;
         }
 
+        public void InitConfig()
+        {
+            WordCov.Cached.MaxIdle = this.Cfg.Val("word_idle", 5);
+            ExcelCov.Cached.MaxIdle = this.Cfg.Val("excel_idle", 5);
+            PowerPointCov.Cached.MaxIdle = this.Cfg.Val("power_point_idle", 5);
+        }
         public void StartMonitor()
         {
             var names = this.Cfg.Val("MPNS", "");
@@ -95,7 +111,7 @@ namespace io.vty.cswf.doc
             TaskPool.Queue(i =>
             {
                 var beg = Util.Now();
-                L.I("DocCov calling Supported({3}) by (\n{0}\n) by tid({1})", cmds, tid, sp);
+                L.I("DocCov calling Supported({2}) by (\n{0}\n) by tid({1})", cmds, tid, sp);
                 CovProc cov = this.RunSupported(tid, sp, cfg, args, src, dst_f);
                 var rargs = Util.NewDict();
                 var used = Util.Now() - beg;
@@ -105,6 +121,7 @@ namespace io.vty.cswf.doc
                 if (cov.Fails.Count > 0)
                 {
                     rargs["err"] = String.Format("{0} exeception found, see DocCov log for detail", cov.Fails.Count);
+                    Console.WriteLine(cov);
                     L.E("DocCov calling Supported({3}) by (\n{0}\n) by tid({1}) fail with->\n{2}\n", cmds, tid, cov.ToString(), sp);
                 }
                 else
@@ -144,11 +161,24 @@ namespace io.vty.cswf.doc
                     args.StringVal(3, out prefix, "");
                     cov = new PowerPointCov(src, dst_f);
                     break;
+                case SupportedL.Pdf:
+                    args.IntVal(3, out maxw, 768);
+                    args.IntVal(4, out maxh, 1024);
+                    args.StringVal(5, out prefix, "");
+                    cov = new PdfCov(src, dst_f, maxw, maxh, cfg.Val("density_x", 96), cfg.Val("density_y", 96));
+                    break;
+                case SupportedL.Img:
+                    args.IntVal(3, out maxw, 768);
+                    args.IntVal(4, out maxh, 1024);
+                    args.StringVal(5, out prefix, "");
+                    cov = new ImgCov(src, dst_f, maxw, maxh);
+                    break;
                 default:
                     throw new ArgumentException("the not supported command", "sp");
             }
             cov.State = tid;
             cov.Proc = this.OnCovProc;
+            cov.ShowLog = cfg.Val("showlog", 0) == 1;
             cov.Exec();
             cov.Dispose();
             if (prefix.Length > 0)

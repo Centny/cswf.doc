@@ -32,6 +32,7 @@ namespace io.vty.cswf.doc
                 {
                     this.App.Quit();
                     ProcKiller.DelRunning(this.Pid);
+                    L.D("Excel application({0}) quit success", this.Pid);
                 }
                 catch (Exception e)
                 {
@@ -45,25 +46,33 @@ namespace io.vty.cswf.doc
             Excel app;
             if (Cached.TryDequeue(out app))
             {
-                app.Book = app.App.Workbooks.Open(src, 0, true, 5, "", "",
-                    true, XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-            }
-            else
-            {
                 try
                 {
-                    ProcKiller.Shared.Lock();
-                    app = new Excel(new Application());
-                    app.App.Visible = true;
                     app.Book = app.App.Workbooks.Open(src, 0, true, 5, "", "",
                         true, XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-                    app.Pid = CovProc.GetWindowThreadProcessId(app.App.ActiveWindow.Hwnd);
-                    ProcKiller.AddRunning(app.Pid);
                 }
-                finally
+                catch (Exception e)
                 {
-                    ProcKiller.Shared.Unlock();
+                    Cached.Enqueue(app);
+                    throw e;
                 }
+                return app;
+            }
+            try
+            {
+                ProcKiller.Shared.Lock();
+                app = new Excel(new Application());
+                app.App.Visible = true;
+                app.Book = app.App.Workbooks.Open(src, 0, true, 5, "", "",
+                    true, XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+                app.Pid = CovProc.GetWindowThreadProcessId(app.App.ActiveWindow.Hwnd);
+                ProcKiller.AddRunning(app.Pid);
+                ProcKiller.Shared.Unlock();
+            }
+            catch (Exception e)
+            {
+                ProcKiller.Shared.Unlock();
+                throw e;
             }
             return app;
         }
@@ -99,6 +108,8 @@ namespace io.vty.cswf.doc
                 var total = app.Book.Worksheets.Count;
                 this.Total = new int[total];
                 this.Done = new int[total];
+                Util.set(this.Total, 1);
+                Util.set(this.Done, 0);
                 for (var i = 1; i <= total; i++)
                 {
                     Worksheet sheet = app.Book.Worksheets[i];

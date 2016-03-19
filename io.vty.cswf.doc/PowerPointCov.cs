@@ -1,9 +1,11 @@
 ﻿using io.vty.cswf.cache;
 using io.vty.cswf.log;
+using io.vty.cswf.util;
 using Microsoft.Office.Core;
 using Microsoft.Office.Interop.PowerPoint;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +18,8 @@ namespace io.vty.cswf.doc
         public class PowerPoint : IDisposable
         {
             public Application App;
+            public Presentation Doc;
+            public int Pid;
             public PowerPoint(Application app)
             {
                 this.App = app;
@@ -26,6 +30,8 @@ namespace io.vty.cswf.doc
                 try
                 {
                     this.App.Quit();
+                    ProcKiller.DelRunning(this.Pid);
+                    L.D("PowerPoint application({0}) quit success", this.Pid);
                 }
                 catch (Exception e)
                 {
@@ -34,22 +40,54 @@ namespace io.vty.cswf.doc
             }
         }
         public static CachedQueue<PowerPoint> Cached = new CachedQueue<PowerPoint>(30000, 3);
-        public static PowerPoint Dequeue()
+        public static PowerPoint Dequeue(string src)
         {
             PowerPoint app;
             if (Cached.TryDequeue(out app))
             {
+                try
+                {
+                    app.Doc = app.App.Presentations.Open(src, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
+                }
+                catch (Exception e)
+                {
+                    Cached.Enqueue(app);
+                    throw e;
+                }
                 return app;
             }
-            else
+            try
             {
+                ProcKiller.Shared.Lock();
                 app = new PowerPoint(new Application());
-                return app;
+                //app.App.Visible = MsoTriState.msoTrue;
+                app.Doc = app.App.Presentations.Open(src, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
+                app.Pid = CovProc.GetWindowThreadProcessId(app.App.HWND);
+                ProcKiller.AddRunning(app.Pid);
+                ProcKiller.Shared.Unlock();
             }
+            catch (Exception e)
+            {
+                ProcKiller.Shared.Unlock();
+                throw e;
+            }
+            return app;
         }
         public static void Enqueue(PowerPoint app)
         {
-            Cached.Enqueue(app);
+            try
+            {
+                if (app.Doc != null)
+                {
+                    app.Doc.Close();
+                }
+                Cached.Enqueue(app);
+            }
+            catch (Exception e)
+            {
+                L.W(e, "Close PowerPoint fail with error->", e.Message);
+            }
+
         }
 
         public String FilterName { get; set; }
@@ -62,19 +100,19 @@ namespace io.vty.cswf.doc
         {
             var file_c = this.Beg;
             L.D("executing ppt2img by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
-            var app = Dequeue();
-            Presentation doc = null;
-            //int pid = 0;
+            PowerPoint app = null;
             this.Cdl.add();
             try
             {
-                doc = app.App.Presentations.Open(this.AsSrc, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
-                var total = doc.Slides.Count;
+                app = Dequeue(this.AsSrc);
+                var total = app.Doc.Slides.Count;
                 this.Total = new int[total];
                 this.Done = new int[total];
+                Util.set(this.Total, 1);
+                Util.set(this.Done, 0);
                 for (var i = 1; i <= total; i++)
                 {
-                    Slide slide = doc.Slides[i];
+                    Slide slide = app.Doc.Slides[i];
                     file_c += this.Ppt2imgProc(slide, i - 1, file_c);
                 }
             }
@@ -86,7 +124,10 @@ namespace io.vty.cswf.doc
             }
             finally
             {
-                Enqueue(app);
+                if (app != null)
+                {
+                    Enqueue(app);
+                }
             }
             this.Cdl.done();
             this.Cdl.wait();
@@ -97,6 +138,11 @@ namespace io.vty.cswf.doc
         {
             this.Total[idx] = 1;
             var spath = String.Format(this.AsDstF, file_c);
+            var as_dir = Path.GetDirectoryName(spath);
+            if (!Directory.Exists(as_dir))
+            {
+                Directory.CreateDirectory(as_dir);
+            }
             if (this.ShowLog)
             {
                 L.D("ppt2img parsing file({0},{1}) to {2}", this.AsSrc, file_c, spath);

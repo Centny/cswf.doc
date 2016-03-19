@@ -28,7 +28,13 @@ namespace io.vty.cswf.doc
                     img.HasAlpha = false;
                 }
                 img.Resize(this.size);
-                img.Write(String.Format(this.AsDstF, this.Beg));
+                var as_dst = String.Format(this.AsDstF, this.Beg);
+                var as_dir = Path.GetDirectoryName(as_dst);
+                if (!Directory.Exists(as_dir))
+                {
+                    Directory.CreateDirectory(as_dir);
+                }
+                img.Write(as_dst);
                 this.Result.Files.Add(String.Format(this.DstF, this.Beg));
             }
             catch (Exception e)

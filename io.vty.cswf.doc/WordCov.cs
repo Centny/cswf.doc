@@ -33,6 +33,7 @@ namespace io.vty.cswf.doc
                 {
                     this.App.Quit();
                     ProcKiller.DelRunning(this.Pid);
+                    L.D("Word application({0}) quit success", this.Pid);
                 }
                 catch (Exception e)
                 {
@@ -46,29 +47,37 @@ namespace io.vty.cswf.doc
             Word app;
             if (Cached.TryDequeue(out app))
             {
-                app.Doc = app.App.Documents.Open(src, false, true);
-                app.Doc.ShowGrammaticalErrors = false;
-                app.Doc.PrintFormsData = false;
-                app.Doc.ShowSpellingErrors = false;
-            }
-            else
-            {
                 try
                 {
-                    ProcKiller.Shared.Lock();
-                    app = new Word(new Application());
-                    app.App.Visible = true;
                     app.Doc = app.App.Documents.Open(src, false, true);
                     app.Doc.ShowGrammaticalErrors = false;
                     app.Doc.PrintFormsData = false;
                     app.Doc.ShowSpellingErrors = false;
-                    app.Pid = CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd);
-                    ProcKiller.AddRunning(app.Pid);
                 }
-                finally
+                catch (Exception e)
                 {
-                    ProcKiller.Shared.Unlock();
+                    Cached.Enqueue(app);
+                    throw e;
                 }
+                return app;
+            }
+            app = new Word(new Application());
+            app.App.Visible = true;
+            try
+            {
+                ProcKiller.Shared.Lock();
+                app.Doc = app.App.Documents.Open(src, false, true);
+                app.Doc.ShowGrammaticalErrors = false;
+                app.Doc.PrintFormsData = false;
+                app.Doc.ShowSpellingErrors = false;
+                app.Pid = CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd);
+                ProcKiller.AddRunning(app.Pid);
+                ProcKiller.Shared.Unlock();
+            }
+            catch (Exception e)
+            {
+                ProcKiller.Shared.Unlock();
+                throw e;
             }
             return app;
         }
@@ -123,6 +132,8 @@ namespace io.vty.cswf.doc
                 Pane pane = window.Panes[1];
                 this.Total = new int[pane.Pages.Count];
                 this.Done = new int[pane.Pages.Count];
+                Util.set(this.Total, 1);
+                Util.set(this.Done, 0);
                 L.D("executing word2png by file({0}),destination format({1}) with {2} page found", this.AsSrc, this.AsDstF, pane.Pages.Count);
                 for (var i = 1; i <= pane.Pages.Count; i++)
                 {
@@ -178,6 +189,11 @@ namespace io.vty.cswf.doc
             try
             {
                 var as_dst = String.Format(this.AsDstF, pages);
+                var as_dir = Path.GetDirectoryName(as_dst);
+                if (!Directory.Exists(as_dir))
+                {
+                    Directory.CreateDirectory(as_dir);
+                }
                 if (this.ShowLog)
                 {
                     L.D("word2img parsing file({0},{1}) to {2}", this.AsSrc, pages, as_dst);
@@ -194,6 +210,7 @@ namespace io.vty.cswf.doc
             }
             catch (Exception e)
             {
+                this.Result.Code = 500;
                 this.Fails.Add(e);
             }
             this.Cdl.done();

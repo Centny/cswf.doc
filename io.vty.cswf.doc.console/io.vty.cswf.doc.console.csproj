@@ -89,8 +89,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>mkdir test
-xcopy /y ..\..\..\io.vty.cswf.doc.test\test test
+    <PostBuildEvent>mkdir sdata_i
+mkdir sdata_i\test
+xcopy /y ..\..\..\io.vty.cswf.doc.test\test sdata_i\test
 xcopy /y ..\..\*.sh .</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

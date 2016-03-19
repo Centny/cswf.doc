@@ -21,10 +21,9 @@ if not "%1"=="" (
 cd ..\
 goto :esuccess
 
-:esuccess
-echo "Build success"
-exit 0
-
 :efail
 echo "Build fail"
 exit 1
+
+:esuccess
+echo "Build success"

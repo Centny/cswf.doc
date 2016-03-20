@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using io.vty.cswf.netw.impl;
 using io.vty.cswf.log;
+using System.Threading;
 
 namespace io.vty.cswf.doc
 {
@@ -20,7 +21,7 @@ namespace io.vty.cswf.doc
             Excel = 2,
             PowerPoint = 3,
             Pdf = 4,
-            Img=5,
+            Img = 5,
         }
         public static SupportedL parseSupported(String key)
         {
@@ -108,7 +109,7 @@ namespace io.vty.cswf.doc
             {
                 throw new ArgumentException("Word argument is invalid, please confirm arguments using by <src dst_f maxw maxh>");
             }
-            TaskPool.Queue(i =>
+            ThreadPool.QueueUserWorkItem(i =>
             {
                 var beg = Util.Now();
                 L.I("DocCov calling Supported({2}) by (\n{0}\n) by tid({1})", cmds, tid, sp);

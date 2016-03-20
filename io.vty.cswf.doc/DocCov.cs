@@ -111,33 +111,46 @@ namespace io.vty.cswf.doc
             }
             ThreadPool.QueueUserWorkItem(i =>
             {
-                var beg = Util.Now();
-                L.I("DocCov calling Supported({2}) by (\n{0}\n) by tid({1})", cmds, tid, sp);
+                this.RunSupportedProc(tid, sp, cfg, args, cmds, src, dst_f);
+            }, 0);
+        }
+        protected virtual void RunSupportedProc(String tid, SupportedL sp, FCfg cfg, Args args, String cmds, String src, String dst_f)
+        {
+            L.I("DocCov calling Supported({2}) by (\n{0}\n) by tid({1})", cmds, tid, sp);
+            var beg = Util.Now();
+            var rargs = Util.NewDict();
+            rargs["tid"] = tid;
+            try
+            {
                 CovProc cov = this.RunSupported(tid, sp, cfg, args, src, dst_f);
-                var rargs = Util.NewDict();
-                var used = Util.Now() - beg;
-                rargs["tid"] = tid;
                 rargs["code"] = cov.Result.Code;
-                rargs["used"] = used;
                 if (cov.Fails.Count > 0)
                 {
                     rargs["err"] = String.Format("{0} exeception found, see DocCov log for detail", cov.Fails.Count);
-                    Console.WriteLine(cov);
                     L.E("DocCov calling Supported({3}) by (\n{0}\n) by tid({1}) fail with->\n{2}\n", cmds, tid, cov.ToString(), sp);
                 }
                 else
                 {
                     rargs["data"] = cov.Result;
                 }
-                try
-                {
-                    this.SendDone(rargs);
-                }
-                catch (Exception e)
-                {
-                    L.E(e, "DocCov calling Supported({3}) by (\n{0}\n) by tid({1}) fail with send done err->", cmds, tid, e.Message, sp);
-                }
-            }, 0);
+            }
+            catch (Exception e)
+            {
+                rargs["code"] = 500;
+                rargs["err"] = String.Format("{0} exeception found, see DocCov log for detail", 1);
+                L.E(e, "DocCov calling Supported({3}) by (\n{0}\n) by tid({1}) fail with error->{2}", cmds, tid, e.Message, sp);
+            }
+            var used = Util.Now() - beg;
+            rargs["used"] = used;
+            try
+            {
+                this.SendDone(rargs);
+                L.I("DocCov calling Supported({2}) success by (\n{0}\n) by tid({1})", cmds, tid, sp);
+            }
+            catch (Exception e)
+            {
+                L.E(e, "DocCov calling Supported({3}) by (\n{0}\n) by tid({1}) fail with send done err->", cmds, tid, e.Message, sp);
+            }
         }
         protected virtual CovProc RunSupported(String tid, SupportedL sp, FCfg cfg, Args args, String src, String dst_f)
         {

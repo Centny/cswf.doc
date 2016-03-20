@@ -70,7 +70,9 @@ namespace io.vty.cswf.doc
             WordCov.Cached.MaxIdle = this.Cfg.Val("word_idle", 5);
             ExcelCov.Cached.MaxIdle = this.Cfg.Val("excel_idle", 5);
             PowerPointCov.Cached.MaxIdle = this.Cfg.Val("power_point_idle", 5);
-            TaskPool.Shared.MaximumConcurrency = this.Cfg.Val("max_concurrency", 16);
+            TaskPool.Shared.MaximumConcurrency = this.Cfg.Val("max_tasks", 32);
+            ThreadPool.SetMaxThreads(this.Cfg.Val("max_worker_threads", 16), this.Cfg.Val("max_async_threads", 16));
+            ThreadPool.SetMaxThreads(this.Cfg.Val("min_worker_threads", 4), this.Cfg.Val("min_async_threads", 4));
         }
         public void StartMonitor()
         {

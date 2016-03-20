@@ -29,10 +29,12 @@ namespace io.vty.cswf.doc
             {
                 return SupportedL.Word;
             }
+            /*
             else if ("Excel".Equals(key))
             {
                 return SupportedL.Excel;
             }
+            */
             else if ("PowerPoint".Equals(key))
             {
                 return SupportedL.PowerPoint;
@@ -110,10 +112,12 @@ namespace io.vty.cswf.doc
             {
                 throw new ArgumentException("Word argument is invalid, please confirm arguments using by <src dst_f maxw maxh>");
             }
-            ThreadPool.QueueUserWorkItem(i =>
-            {
-                this.RunSupportedProc(tid, sp, cfg, args, cmds, src, dst_f);
-            }, 0);
+            ThreadPool.QueueUserWorkItem(this.RunSupportedProc_, new object[] { tid, sp, cfg, args, cmds, src, dst_f });
+        }
+        private void RunSupportedProc_(object state)
+        {
+            var args = state as object[];
+            this.RunSupportedProc((String)args[0], (SupportedL)args[1], (FCfg)args[2], (Args)args[3], (String)args[4], (String)args[5], (String)args[6]);
         }
         protected virtual void RunSupportedProc(String tid, SupportedL sp, FCfg cfg, Args args, String cmds, String src, String dst_f)
         {

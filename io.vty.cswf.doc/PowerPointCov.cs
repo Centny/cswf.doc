@@ -81,6 +81,7 @@ namespace io.vty.cswf.doc
                 {
                     app.Doc.Close();
                 }
+                app.Doc = null;
                 Cached.Enqueue(app);
             }
             catch (Exception e)

@@ -68,6 +68,7 @@ namespace io.vty.cswf.doc
             WordCov.Cached.MaxIdle = this.Cfg.Val("word_idle", 5);
             ExcelCov.Cached.MaxIdle = this.Cfg.Val("excel_idle", 5);
             PowerPointCov.Cached.MaxIdle = this.Cfg.Val("power_point_idle", 5);
+            TaskPool.Shared.MaximumConcurrency = this.Cfg.Val("max_concurrency", 16);
         }
         public void StartMonitor()
         {

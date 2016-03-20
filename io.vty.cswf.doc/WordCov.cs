@@ -172,9 +172,11 @@ namespace io.vty.cswf.doc
         {
             this.Total[idx] = 1;
             this.Cdl.add();
+            var tbits = new byte[bits.Length];
+            Array.Copy(bits, tbits, bits.Length);
             TaskPool.Queue(i =>
             {
-                this.RunWord2imgProc(bits, idx, pages);
+                this.RunWord2imgProc(tbits, idx, pages);
             }, idx);
             return 1;
         }

@@ -16,6 +16,7 @@ namespace io.vty.cswf.doc.test
             res.Trim("ss/");
             res.Save("test.json");
             String s=Util.read("test.json");
+            Console.WriteLine(s);
             var jres = Json.parse<CovRes>(s);
             Assert.AreEqual(res.Count, jres.Count);
             Assert.AreEqual(res.Files.Count, jres.Files.Count);

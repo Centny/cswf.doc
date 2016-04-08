@@ -15,6 +15,7 @@ namespace io.vty.cswf.doc
         public ImgCov(String src, String dst_f, int maxw = 768, int maxh = 1024, int beg = 0) : base(src, dst_f, maxw, maxh, beg)
         {
             this.size = new MagickGeometry(maxw, maxh);
+            this.size.Greater = true;
         }
 
         public override void Exec()

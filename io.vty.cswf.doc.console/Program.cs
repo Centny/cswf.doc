@@ -38,7 +38,7 @@ namespace io.vty.cswf.doc.console
         {
             try
             {
-                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l", "pdf" }, args, 0);
+                var cargs = Args.parseArgs(new string[] { "w", "e", "p", "l", "pdf","i" }, args, 0);
                 var log = cargs.Exist("l");
                 var w = cargs.Exist("w");
                 var e = cargs.Exist("e");

@@ -22,7 +22,7 @@ namespace io.vty.cswf.doc
         {
             try
             {
-                var img = new ImageMagick.MagickImage(this.Src);
+                var img = new ImageMagick.MagickImage(this.AsSrc);
                 img.BackgroundColor = new MagickColor(Color.White);
                 if (".jpg".Equals(Path.GetExtension(this.DstF), StringComparison.OrdinalIgnoreCase))
                 {

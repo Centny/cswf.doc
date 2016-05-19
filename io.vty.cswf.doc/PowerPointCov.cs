@@ -103,9 +103,11 @@ namespace io.vty.cswf.doc
             L.D("executing ppt2img by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             PowerPoint app = null;
             this.Cdl.add();
+            var tf = Path.GetTempFileName();
             try
             {
-                app = Dequeue(this.AsSrc);
+                File.Copy(this.AsSrc, tf, true);
+                app = Dequeue(tf);
                 var total = app.Doc.Slides.Count;
                 this.Total = new int[total];
                 this.Done = new int[total];
@@ -129,6 +131,14 @@ namespace io.vty.cswf.doc
                 {
                     Enqueue(app);
                 }
+            }
+            try
+            {
+                File.Delete(tf);
+            }
+            catch (Exception e)
+            {
+                L.W("executing ppt2img on delete temp file({0}) error->{1}", tf, e.Message);
             }
             this.Cdl.done();
             this.Cdl.wait();

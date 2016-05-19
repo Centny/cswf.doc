@@ -26,5 +26,15 @@ namespace io.vty.cswf.doc.test
             cov.Dispose();
             Assert.AreEqual(0, cov.Fails.Count);
         }
+
+        [TestMethod]
+        public void TestImgCov3()
+        {
+            ImgCov cov = new ImgCov("F:/sdata_i/www/u_57330b08bc9a34219700001c.jpg","F:/sdata_o/www/u_57330b08bc9a34219700001c.jpg");
+            cov.Exec();
+            cov.Dispose();
+            //Console.WriteLine(cov.Fails[0]);
+            Assert.AreEqual(0, cov.Fails.Count);
+        }
     }
 }

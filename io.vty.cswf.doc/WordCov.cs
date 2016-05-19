@@ -111,9 +111,11 @@ namespace io.vty.cswf.doc
             L.D("executing word2png by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             Word word = null;
             this.Cdl.add();
+            var tf = Path.GetTempFileName();
             try
             {
-                word = Dequeue(this.AsSrc);
+                File.Copy(this.AsSrc, tf, true);
+                word = Dequeue(tf);
                 if (word.Doc.Windows.Count < 1)
                 {
                     this.Result.Code = 404;
@@ -163,6 +165,14 @@ namespace io.vty.cswf.doc
                 {
                     Enqueue(word);
                 }
+            }
+            try
+            {
+                File.Delete(tf);
+            }
+            catch (Exception e)
+            {
+                L.W("executing word2png on delete temp file({0}) error->{1}", tf, e.Message);
             }
             this.Cdl.done();
             this.Cdl.wait();

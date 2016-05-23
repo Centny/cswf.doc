@@ -99,7 +99,7 @@ namespace io.vty.cswf.doc
 
         public override void Exec()
         {
-            var file_c = this.Beg;
+            var file_c = 0;
             L.D("executing ppt2img by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             PowerPoint app = null;
             this.Cdl.add();
@@ -159,7 +159,7 @@ namespace io.vty.cswf.doc
                 L.D("ppt2img parsing file({0},{1}) to {2}", this.AsSrc, file_c, spath);
             }
             slide.Export(spath, this.FilterName, 0, 0);
-            var rspath = String.Format(this.DstF, file_c);
+            var rspath = String.Format(this.DstF, this.Beg + file_c);
             this.Result.Count += 1;
             this.Result.Files.Add(rspath);
             this.Done[idx] = 1;

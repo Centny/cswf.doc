@@ -107,7 +107,7 @@ namespace io.vty.cswf.doc
 
         public override void Exec()
         {
-            var pages = this.Beg;
+            var pages = 0;
             L.D("executing word2png by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             Word word = null;
             this.Cdl.add();
@@ -184,6 +184,7 @@ namespace io.vty.cswf.doc
             this.Cdl.add();
             var tbits = new byte[bits.Length];
             Array.Copy(bits, tbits, bits.Length);
+            this.Result.Files.Add("");
             TaskPool.Queue(i =>
             {
                 this.RunWord2imgProc(tbits, idx, pages);
@@ -216,7 +217,7 @@ namespace io.vty.cswf.doc
                 buf.Dispose();
                 Util.SaveThumbnail(img, as_dst, this.MaxWidth, this.MaxHeight, true, true, ".JPG");
                 this.Result.Count += 1;
-                this.Result.Files.Add(String.Format(this.DstF, pages));
+                this.Result.Files[pages] = String.Format(this.DstF, this.Beg + pages);
                 this.Done[tidx] = 1;
                 this.OnDone();
             }

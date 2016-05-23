@@ -14,6 +14,8 @@ namespace io.vty.cswf.doc.test
             PdfCov cov = new PdfCov("test\\xx.pdf", "pdf-{0}.jpg");
             cov.Exec();
             cov.PrintFails();
+            Assert.AreEqual(6, cov.Result.Files.Count);
+            Assert.AreEqual(6, cov.Result.Count);
             Assert.AreEqual(0, cov.Fails.Count);
         }
     }

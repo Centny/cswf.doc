@@ -30,7 +30,7 @@ namespace io.vty.cswf.doc
         }
         public override void Exec()
         {
-            var pages = this.Beg;
+            //var pages = this.Beg;
             L.D("executing pdf2img by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             this.Cdl.add();
             MagickImageCollection images = new MagickImageCollection();
@@ -74,6 +74,7 @@ namespace io.vty.cswf.doc
         protected virtual void Pdf2imgProc(MagickImage image, int idx, int i, int file_c)
         {
             this.Cdl.add();
+            this.Result.Files.Add("");
             TaskPool.Queue(args =>
             {
                 this.RunPdf2imgProc(image, idx, i, file_c);
@@ -83,7 +84,7 @@ namespace io.vty.cswf.doc
         {
             try
             {
-                var as_dst = String.Format(this.AsDstF, file_c + i);
+                var as_dst = String.Format(this.AsDstF, this.Beg + file_c + i);
                 var as_dir = Path.GetDirectoryName(as_dst);
                 if (!Directory.Exists(as_dir))
                 {
@@ -97,8 +98,8 @@ namespace io.vty.cswf.doc
                 image.HasAlpha = false;
                 image.Resize(size);
                 image.Write(as_dst);
-                this.Result.Count += 1;
-                this.Result.Files.Add(String.Format(this.DstF, file_c + i));
+                this.Result.Count++;
+                this.Result.Files[file_c + i] = String.Format(this.DstF, this.Beg + file_c + i);
                 if (idx < 0)
                 {
                     this.Done[i] = 1;

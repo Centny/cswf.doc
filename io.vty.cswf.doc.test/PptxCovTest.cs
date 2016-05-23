@@ -15,6 +15,8 @@ namespace io.vty.cswf.doc.test
             cov.Exec();
             cov.PrintFails();
             Assert.AreEqual(0, cov.Fails.Count);
+            Assert.AreEqual(1, cov.Result.Count);
+            Assert.AreEqual(1, cov.Result.Files.Count);
         }
         [TestMethod]
         public void TestPptx2img2()
@@ -26,6 +28,8 @@ namespace io.vty.cswf.doc.test
                 cov.Exec();
                 cov.PrintFails();
                 Assert.AreEqual(0, cov.Fails.Count);
+                Assert.AreEqual(1, cov.Result.Count);
+                Assert.AreEqual(1, cov.Result.Files.Count);
             }
         }
         [TestCleanup]

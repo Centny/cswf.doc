@@ -29,6 +29,8 @@ namespace io.vty.cswf.doc.test
             cov.Exec();
             cov.PrintFails();
             Assert.AreEqual(0, cov.Fails.Count);
+            Assert.AreEqual(7, cov.Result.Count);
+            Assert.AreEqual(7, cov.Result.Files.Count);
         }
         [TestMethod]
         public void TestWord2img2()
@@ -39,6 +41,8 @@ namespace io.vty.cswf.doc.test
                 WordCov cov = new WordCov("test\\xx.docx", "docx-{0}.jpg");
                 cov.Exec();
                 cov.PrintFails();
+                Assert.AreEqual(7, cov.Result.Count);
+                Assert.AreEqual(7, cov.Result.Files.Count);
                 Assert.AreEqual(0, cov.Fails.Count);
             }
         }

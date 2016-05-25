@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io.vty.cswf.doc.console", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io.vty.cswf.doc.test", "io.vty.cswf.doc.test\io.vty.cswf.doc.test.csproj", "{5147F02B-4DC5-4A54-BF0A-365F6D00A5F8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "io.vty.cswf.doc.mtest", "io.vty.cswf.doc.mtest\io.vty.cswf.doc.mtest.csproj", "{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,14 @@ Global
 		{5147F02B-4DC5-4A54-BF0A-365F6D00A5F8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5147F02B-4DC5-4A54-BF0A-365F6D00A5F8}.Release|x64.ActiveCfg = Release|Any CPU
 		{5147F02B-4DC5-4A54-BF0A-365F6D00A5F8}.Release|x64.Build.0 = Release|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Debug|x64.Build.0 = Debug|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Release|x64.ActiveCfg = Release|Any CPU
+		{86D1E2FF-4B8D-4BA9-BF29-7B4996CC51F4}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -37,6 +37,7 @@ namespace io.vty.cswf.doc
                 }
                 img.Write(as_dst);
                 this.Result.Files.Add(String.Format(this.DstF, this.Beg));
+                this.Result.Count += 1;
             }
             catch (Exception e)
             {

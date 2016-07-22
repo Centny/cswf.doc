@@ -26,8 +26,8 @@ namespace io.vty.cswf.doc.console
                 "   -l show detail log\n" +
                 "   -o <json result>\n" +
                 "   -prefix <the trim prefix to out json>" +
-                "   -w <width>  the output image width\n" +
-                "   -h <height>  the output image height\n" +
+                "   -iw <width>  the output image width\n" +
+                "   -ih <height>  the output image height\n" +
                 "   -dx <density x>  the read pdf density x\n" +
                 "   -dy <density y>  the read pdf density y\n" +
                 "   -beg <begin>  the begin int\n" +
@@ -66,22 +66,27 @@ namespace io.vty.cswf.doc.console
                 CovProc cov;
                 if (w)
                 {
+                    L.D("cswf-doc do doc converter");
                     cov = new WordCov(cargs.Vals[0], cargs.Vals[1], width, height, beg);
                 }
                 else if (e)
                 {
+                    L.D("cswf-doc do xls converter");
                     cov = new ExcelCov(cargs.Vals[0], cargs.Vals[1], width, height, densityx, densityy, beg);
                 }
                 else if (p)
                 {
+                    L.D("cswf-doc do ppt converter");
                     cov = new PowerPointCov(cargs.Vals[0], cargs.Vals[1], beg);
                 }
                 else if (pdf)
                 {
+                    L.D("cswf-doc do pdf converter");
                     cov = new PdfCov(cargs.Vals[0], cargs.Vals[1], width, height, densityx, densityy, beg);
                 }
                 else if (i)
                 {
+                    L.D("cswf-doc do image converter");
                     cov = new ImgCov(cargs.Vals[0], cargs.Vals[1], width, height, beg);
                 }
                 else
@@ -93,19 +98,27 @@ namespace io.vty.cswf.doc.console
                 cov.ShowLog = log;
                 cov.Exec();
                 cov.Dispose();
-                var res = cov.Result;
-                string prefix = "";
-                if (cargs.StringVal("prefix", out prefix))
+                if (cov.Result.Code != 0)
                 {
-                    res.Trim(prefix);
+                    cov.PrintFails();
+                    Environment.ExitCode = cov.Result.Code;
                 }
-                string json = "";
-                if (cargs.StringVal("o", out json))
+                else
                 {
-                    L.D("converter saving result to json file({0})", json);
-                    res.Save(json);
+                    var res = cov.Result;
+                    string prefix = "";
+                    if (cargs.StringVal("prefix", out prefix))
+                    {
+                        res.Trim(prefix);
+                    }
+                    string json = "";
+                    if (cargs.StringVal("o", out json))
+                    {
+                        L.D("converter saving result to json file({0})", json);
+                        res.Save(json);
+                    }
+                    Environment.ExitCode = 0;
                 }
-                Environment.ExitCode = 0;
             }
             catch (Exception e)
             {

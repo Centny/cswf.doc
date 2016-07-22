@@ -9,11 +9,24 @@ using System.Threading.Tasks;
 using io.vty.cswf.netw.impl;
 using io.vty.cswf.log;
 using System.Threading;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace io.vty.cswf.doc
 {
     public class DocCov : DTM_C_j
     {
+        [DllImport("user32.dll")]
+        static extern bool TerminateProcess(IntPtr hwnd, uint code);
+
+        public static void CloseProc(Process proc)
+        {
+            try {
+                TerminateProcess(proc.Handle, 1);
+            }catch(Exception)
+            {
+            }
+        }
         public enum SupportedL
         {
             None = 0,
@@ -81,6 +94,7 @@ namespace io.vty.cswf.doc
             {
                 return;
             }
+            ProcKiller.Shared.OnClose = CloseProc;
             var period = this.Cfg.Val("MPPT", 30000);
             L.I("DocCov start process monitor by names({0}),period({1})", names, period);
             foreach (var name in names.Split(','))

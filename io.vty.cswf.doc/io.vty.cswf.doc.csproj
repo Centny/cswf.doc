@@ -80,6 +80,7 @@
     <Compile Include="PowerPointCov.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CovRes.cs" />
+    <Compile Include="Samba.cs" />
     <Compile Include="WordCov.cs" />
   </ItemGroup>
   <ItemGroup>

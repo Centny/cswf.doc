@@ -65,6 +65,7 @@
     <Compile Include="DocCovTest.cs" />
     <Compile Include="ErrTest.cs" />
     <Compile Include="CovResTest.cs" />
+    <Compile Include="SambaTest.cs" />
     <Compile Include="WordCovTest.cs" />
   </ItemGroup>
   <ItemGroup>

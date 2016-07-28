@@ -10,6 +10,7 @@ if not "%errorlevel%"=="0" goto :efail
 xcopy io.vty.cswf.doc.console\bin\x64\Release\cov_*.sh  build\cswf.doc
 xcopy io.vty.cswf.doc.console\bin\x64\Release\cswf-doc.exe*  build\cswf.doc
 xcopy io.vty.cswf.doc.console\bin\x64\Release\*.dll build\cswf.doc
+xcopy io.vty.cswf.doc.mtest\bin\x64\Release\io.vty.cswf.doc.mtest.exe
 xcopy io.vty.cswf.doc.test\test\* build\cswf.doc\sdata_i\test
 
 cd build

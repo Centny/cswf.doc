@@ -52,11 +52,11 @@ namespace io.vty.cswf.doc
                 switch (path.Value)
                 {
                     case READ:
-                        L.D("Samba test path({0}) by READ", path.Value);
+                        //L.D("Samba test path({0}) by READ", path.Value);
                         Util.read(path.Key);
                         break;
                     case RW:
-                        L.D("Samba test path({0}) by RW", path.Value);
+                        //L.D("Samba test path({0}) by RW", path.Value);
                         Util.write(path.Key, "key");
                         Util.read(path.Key);
                         break;

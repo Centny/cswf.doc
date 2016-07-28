@@ -109,6 +109,11 @@ namespace io.vty.cswf.doc
                 File.Copy(this.AsSrc, tf, true);
                 app = Dequeue(tf);
                 var total = app.Doc.Slides.Count;
+                if (total > this.MaxPage)
+                {
+                    this.Result.Code = 413;
+                    return;
+                }
                 this.Total = new int[total];
                 this.Done = new int[total];
                 Util.set(this.Total, 1);
@@ -131,14 +136,14 @@ namespace io.vty.cswf.doc
                 {
                     Enqueue(app);
                 }
-            }
-            try
-            {
-                File.Delete(tf);
-            }
-            catch (Exception e)
-            {
-                L.W("executing ppt2img on delete temp file({0}) error->{1}", tf, e.Message);
+                try
+                {
+                    File.Delete(tf);
+                }
+                catch (Exception e)
+                {
+                    L.W("executing ppt2img on delete temp file({0}) error->{1}", tf, e.Message);
+                }
             }
             this.Cdl.done();
             this.Cdl.wait();

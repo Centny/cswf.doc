@@ -132,6 +132,13 @@ namespace io.vty.cswf.doc
                     return;
                 }
                 Pane pane = window.Panes[1];
+                if (pane.Pages.Count > this.MaxPage)
+                {
+                    this.Result.Code = 413;
+                    L.D("executing word2png by file({0}),destination format({1}) fail with too large code({2}),count({3})",
+                        this.AsSrc, this.AsDstF, this.Result.Code, this.Result.Count);
+                    return;
+                }
                 this.Total = new int[pane.Pages.Count];
                 this.Done = new int[pane.Pages.Count];
                 Util.set(this.Total, 1);
@@ -165,14 +172,14 @@ namespace io.vty.cswf.doc
                 {
                     Enqueue(word);
                 }
-            }
-            try
-            {
-                File.Delete(tf);
-            }
-            catch (Exception e)
-            {
-                L.W("executing word2png on delete temp file({0}) error->{1}", tf, e.Message);
+                try
+                {
+                    File.Delete(tf);
+                }
+                catch (Exception e)
+                {
+                    L.W("executing word2png on delete temp file({0}) error->{1}", tf, e.Message);
+                }
             }
             this.Cdl.done();
             this.Cdl.wait();

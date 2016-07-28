@@ -32,6 +32,7 @@ namespace io.vty.cswf.doc
         public CovRes Result { get; protected set; }
         public int MaxWidth { get; protected set; }
         public int MaxHeight { get; protected set; }
+        public int MaxPage { get; set; }
         public IList<Exception> Fails { get; protected set; }
         public long LastProc { get; protected set; }
         public long ProcDelay { get; set; }
@@ -48,6 +49,7 @@ namespace io.vty.cswf.doc
             this.Fails = new List<Exception>();
             this.MaxWidth = maxw;
             this.MaxHeight = maxh;
+            this.MaxPage = 512;
             this.Beg = beg;
             this.ProcDelay = 1000;
             if (this.MaxWidth < 1 || this.MaxHeight < 1)

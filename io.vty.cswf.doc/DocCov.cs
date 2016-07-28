@@ -94,7 +94,7 @@ namespace io.vty.cswf.doc
             {
                 return;
             }
-            ProcKiller.Shared.OnClose = CloseProc;
+            //ProcKiller.Shared.OnClose = CloseProc;
             var period = this.Cfg.Val("MPPT", 30000);
             L.I("DocCov start process monitor by names({0}),period({1})", names, period);
             foreach (var name in names.Split(','))

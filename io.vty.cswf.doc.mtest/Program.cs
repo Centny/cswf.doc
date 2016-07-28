@@ -17,6 +17,7 @@ namespace io.vty.cswf.doc.mtest
         {
             //L.D("start run...");
             var running = false;
+            /*
             new Thread(() =>
             {
                 while (true)
@@ -31,6 +32,7 @@ namespace io.vty.cswf.doc.mtest
                 }
                 Console.WriteLine("exit...");
             }).Start();
+            */
             WordCov.Cached.MaxIdle = 0;
             ProcKiller.AddName("WINWORD");
             ProcKiller.StartTimer(5000);

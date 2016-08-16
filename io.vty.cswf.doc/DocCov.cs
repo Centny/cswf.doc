@@ -112,7 +112,7 @@ namespace io.vty.cswf.doc
             var inc = this.Cfg.Val("MWINC", "");
             var exc = this.Cfg.Val("MWEXC", "");
             //ProcKiller.Shared.OnClose = CloseProc;
-            var period = this.Cfg.Val("MWPT", 30000);
+            var period = this.Cfg.Val("MWPT", 5000);
             L.I("DocCov start window monitor by inc({0}),exc({1}),period({2})", inc, exc, period);
             WindowCloser.StartWindowCloser(inc, exc, period);
             WindowCloser.Shared.ExcCurrent();

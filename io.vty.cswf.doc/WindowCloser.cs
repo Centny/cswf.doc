@@ -13,7 +13,7 @@ namespace io.vty.cswf.doc
     public class WindowCloser
     {
         public static WindowCloser Shared = new WindowCloser();
-        public static void StartWindowCloser(String inc, String exc, int period)
+        public static void StartWindowCloser(String inc, String exc, int period = 3000)
         {
             if (!String.IsNullOrWhiteSpace(inc))
             {
@@ -30,7 +30,7 @@ namespace io.vty.cswf.doc
                 }
             }
             Shared.Period = period;
-            L.D("WindowCloser start by current names:\n{0}", Shared.ListCurrent().ToString());
+            L.D("WindowCloser start by current names:\n{0}", Util.tos(Shared.ListCurrent()));
             Shared.Start();
         }
         public static void StopWindowCloser()

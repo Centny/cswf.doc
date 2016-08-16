@@ -124,7 +124,7 @@ namespace io.vty.cswf.doc
                 {
                     if (this.ShowLog)
                     {
-                        L.D("doProc process not hitted window({0})", Encoding.GetEncoding("GB2312").GetString(Encoding.UTF8.GetBytes(msg)));
+                        L.D("doProc process not hitted window({0})", msg);
                     }
                     return true;
                 }

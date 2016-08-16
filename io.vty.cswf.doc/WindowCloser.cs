@@ -134,13 +134,6 @@ namespace io.vty.cswf.doc
         }
         protected virtual bool isHitted(String title)
         {
-            foreach (String inc in this.Inc)
-            {
-                if (inc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
-                {
-                    return true;
-                }
-            }
             foreach (String exc in this.Exc)
             {
                 if (exc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
@@ -148,7 +141,14 @@ namespace io.vty.cswf.doc
                     return false;
                 }
             }
-            return true;
+            foreach (String inc in this.Inc)
+            {
+                if (inc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public void Start()
         {

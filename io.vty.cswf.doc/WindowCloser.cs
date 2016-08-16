@@ -30,7 +30,7 @@ namespace io.vty.cswf.doc
                 }
             }
             Shared.Period = period;
-            L.D("WindowCloser start by current names:\n{0}", Shared.ListCurrent());
+            L.D("WindowCloser start by current names:\n{0}", Shared.ListCurrent().ToString());
             Shared.Start();
         }
         public static void StopWindowCloser()

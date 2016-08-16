@@ -29,6 +29,10 @@ namespace io.vty.cswf.doc
                     Shared.Exc.Add(e);
                 }
             }
+            else
+            {
+                Shared.ExcCurrent();
+            }
             Shared.Period = period;
             Shared.Start();
         }
@@ -63,6 +67,25 @@ namespace io.vty.cswf.doc
             EnumWindows(this.doProc, 0);
         }
 
+        public void ExcCurrent()
+        {
+            EnumWindows((hWnd, param) =>
+            {
+                if (!IsWindowVisible(hWnd))
+                {
+                    return true;
+                }
+                StringBuilder title = new StringBuilder(10240);
+                GetWindowText(hWnd, title, title.Capacity);
+                String msg = title.ToString();
+                if (String.IsNullOrWhiteSpace(msg))
+                {
+                    return true;
+                }
+                this.Exc.Add(msg);
+                return true;
+            }, 0);
+        }
         protected virtual bool doProc(int hWnd, int param)
         {
             if (!IsWindowVisible(hWnd))

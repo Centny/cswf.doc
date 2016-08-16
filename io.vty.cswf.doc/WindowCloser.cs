@@ -29,11 +29,8 @@ namespace io.vty.cswf.doc
                     Shared.Exc.Add(e);
                 }
             }
-            else
-            {
-                Shared.ExcCurrent();
-            }
             Shared.Period = period;
+            L.D("WindowCloser start by current names:\n{0}", Shared.ListCurrent());
             Shared.Start();
         }
         public static void StopWindowCloser()
@@ -85,6 +82,27 @@ namespace io.vty.cswf.doc
                 this.Exc.Add(msg);
                 return true;
             }, 0);
+        }
+        public IList<String> ListCurrent()
+        {
+            var names = new List<String>();
+            EnumWindows((hWnd, param) =>
+            {
+                if (!IsWindowVisible(hWnd))
+                {
+                    return true;
+                }
+                StringBuilder title = new StringBuilder(10240);
+                GetWindowText(hWnd, title, title.Capacity);
+                String msg = title.ToString();
+                if (String.IsNullOrWhiteSpace(msg))
+                {
+                    return true;
+                }
+                names.Add(msg);
+                return true;
+            }, 0);
+            return names;
         }
         protected virtual bool doProc(int hWnd, int param)
         {

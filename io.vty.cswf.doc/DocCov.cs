@@ -115,6 +115,7 @@ namespace io.vty.cswf.doc
             var period = this.Cfg.Val("MWPT", 30000);
             L.I("DocCov start window monitor by inc({0}),exc({1}),period({2})", inc, exc, period);
             WindowCloser.StartWindowCloser(inc, exc, period);
+            WindowCloser.Shared.ExcCurrent();
         }
 
         public override void DoCmd(string tid, FCfg fcfg, string cmds)

@@ -15,6 +15,9 @@ namespace io.vty.cswf.doc.mtest
         //static readonly ILog L = Log.New(); //for inintial logger.
         static void Main(string[] args)
         {
+            WindowCloser.Shared.ShowLog = true;
+            WindowCloser.StartWindowCloser("显示错误", null);
+            Thread.Sleep(3000000);
             //L.D("start run...");
             var running = false;
             /*

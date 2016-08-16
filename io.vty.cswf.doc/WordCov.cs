@@ -59,6 +59,7 @@ namespace io.vty.cswf.doc
                     Cached.Enqueue(app);
                     throw e;
                 }
+                ProcKiller.MarkUsed(app.Pid);
                 return app;
             }
             app = new Word(new Application());
@@ -72,6 +73,7 @@ namespace io.vty.cswf.doc
                 app.Doc.ShowSpellingErrors = false;
                 app.Pid = CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd);
                 ProcKiller.AddRunning(app.Pid);
+                ProcKiller.MarkUsed(app.Pid);
                 ProcKiller.Shared.Unlock();
             }
             catch (Exception e)
@@ -91,6 +93,7 @@ namespace io.vty.cswf.doc
                 }
                 app.Doc = null;
                 Cached.Enqueue(app);
+                ProcKiller.MarkDone(app.Pid);
             }
             catch (Exception e)
             {

@@ -99,12 +99,13 @@ namespace io.vty.cswf.doc
             }
             //ProcKiller.Shared.OnClose = CloseProc;
             var period = this.Cfg.Val("MPPT", 30000);
-            L.I("DocCov start process monitor by names({0}),period({1})", names, period);
+            var timeout = this.Cfg.Val("MPTO", 60000);
+            L.I("DocCov start process monitor by names({0}),period({1}),timeout({2})", names, period, timeout);
             foreach (var name in names.Split(','))
             {
                 ProcKiller.AddName(name);
             }
-            ProcKiller.StartTimer(period);
+            ProcKiller.StartTimer(period, timeout);
         }
 
         public void StartWindowCloser()

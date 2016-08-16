@@ -93,18 +93,18 @@ namespace io.vty.cswf.doc
         }
         protected virtual bool isHitted(String title)
         {
-            foreach (String exc in this.Exc)
-            {
-                if (exc.Contains(title))
-                {
-                    return false;
-                }
-            }
             foreach (String inc in this.Inc)
             {
-                if (inc.Contains(title))
+                if (inc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
                 {
                     return true;
+                }
+            }
+            foreach (String exc in this.Exc)
+            {
+                if (exc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
+                {
+                    return false;
                 }
             }
             return true;

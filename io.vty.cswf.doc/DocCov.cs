@@ -21,9 +21,11 @@ namespace io.vty.cswf.doc
 
         public static void CloseProc(Process proc)
         {
-            try {
+            try
+            {
                 TerminateProcess(proc.Handle, 1);
-            }catch(Exception)
+            }
+            catch (Exception)
             {
             }
         }
@@ -87,6 +89,7 @@ namespace io.vty.cswf.doc
             ThreadPool.SetMaxThreads(this.Cfg.Val("max_worker_threads", 16), this.Cfg.Val("max_async_threads", 16));
             ThreadPool.SetMaxThreads(this.Cfg.Val("min_worker_threads", 4), this.Cfg.Val("min_async_threads", 4));
         }
+
         public void StartMonitor()
         {
             var names = this.Cfg.Val("MPNS", "");
@@ -103,6 +106,17 @@ namespace io.vty.cswf.doc
             }
             ProcKiller.StartTimer(period);
         }
+
+        public void StartWindowCloser()
+        {
+            var inc = this.Cfg.Val("MWINC", "");
+            var exc = this.Cfg.Val("MWEXC", "");
+            //ProcKiller.Shared.OnClose = CloseProc;
+            var period = this.Cfg.Val("MWPT", 30000);
+            L.I("DocCov start window monitor by inc({0}),exc({1}),period({2})", inc, exc, period);
+            WindowCloser.StartWindowCloser(inc, exc, period);
+        }
+
         public override void DoCmd(string tid, FCfg fcfg, string cmds)
         {
             var args = Args.parseArgs(cmds);

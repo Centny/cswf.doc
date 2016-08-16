@@ -81,6 +81,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CovRes.cs" />
     <Compile Include="Samba.cs" />
+    <Compile Include="WindowCloser.cs" />
     <Compile Include="WordCov.cs" />
   </ItemGroup>
   <ItemGroup>

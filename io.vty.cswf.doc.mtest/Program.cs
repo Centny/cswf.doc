@@ -7,17 +7,20 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-//[assembly: log4net.Config.XmlConfigurator(Watch = true)]
+[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 namespace io.vty.cswf.doc.mtest
 {
     class Program
     {
-        //static readonly ILog L = Log.New(); //for inintial logger.
+        static readonly ILog L = Log.New(); //for inintial logger.
         static void Main(string[] args)
         {
-            WindowCloser.Shared.ShowLog = true;
-            WindowCloser.StartWindowCloser("显示错误", null);
-            Thread.Sleep(3000000);
+            var names=WindowCloser.Shared.ListCurrent();
+            foreach(var n in names)
+            {
+                Console.WriteLine(n);
+            }
+            /*
             //L.D("start run...");
             var running = false;
             /*
@@ -35,7 +38,6 @@ namespace io.vty.cswf.doc.mtest
                 }
                 Console.WriteLine("exit...");
             }).Start();
-            */
             WordCov.Cached.MaxIdle = 0;
             ProcKiller.AddName("WINWORD");
             ProcKiller.StartTimer(5000);
@@ -48,6 +50,7 @@ namespace io.vty.cswf.doc.mtest
                     break;
                 }
             }
+            */
         }
     }
 }

@@ -8,7 +8,7 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>io.vty.cswf.doc.mtest</RootNamespace>
-    <AssemblyName>io.vty.cswf.doc.mtest</AssemblyName>
+    <AssemblyName>doc.mtest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

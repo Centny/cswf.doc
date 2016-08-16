@@ -53,6 +53,7 @@ namespace io.vty.cswf.doc
         public IList<String> Inc { protected set; get; }
         public Timer T { get; protected set; }
         public int Period { get; set; }
+        public bool ShowLog { get; set; }
         public WindowCloser()
         {
             this.Exc = new List<String>();
@@ -121,6 +122,10 @@ namespace io.vty.cswf.doc
                 }
                 if (!this.isHitted(msg))
                 {
+                    if (this.ShowLog)
+                    {
+                        L.D("doProc process not hitted window({0})", msg);
+                    }
                     return true;
                 }
                 SendMessage(hWnd, WM_CLOSE, 0, 0);

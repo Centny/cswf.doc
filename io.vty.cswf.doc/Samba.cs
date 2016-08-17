@@ -70,6 +70,11 @@ namespace io.vty.cswf.doc
             {
                 this.Test();
                 //L.D("Samba test path success");
+                if (this.Success != null)
+                {
+                    this.Success(this);
+                }
+                this.Activated = true;
                 return 0;
             }
             catch (Exception e)

@@ -79,7 +79,7 @@ namespace io.vty.cswf.doc
             }
             catch (Exception e)
             {
-                L.E("Samba test path({0}) fail with error({1}),will try remount", this.Paths, e.Message);
+                L.E("Samba test path({0}) fail with error({1}),will try remount", Json.stringify(this.Paths), e.Message);
                 if (this.Activated && this.Fail != null)
                 {
                     this.Fail(this, e);

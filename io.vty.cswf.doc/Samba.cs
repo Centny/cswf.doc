@@ -64,7 +64,7 @@ namespace io.vty.cswf.doc
             }
         }
 
-        public int Check()
+        public int Check(bool retry = false)
         {
             try
             {
@@ -85,22 +85,26 @@ namespace io.vty.cswf.doc
                     this.Fail(this, e);
                 }
                 this.Activated = false;
+                if (retry)
+                {
+                    return -1;
+                }
             }
             string res;
             var code = this.Remount(out res);
-            if (code == 0)
+            if (code != 0)
             {
-                if (this.Success != null)
-                {
-                    this.Success(this);
-                }
-                this.Activated = true;
+                L.E("Samba try remount fail with code({0}),result(\n{1}\n)", code, res);
+                return code;
+            }
+            if (!retry)
+            {
+                return this.Check(true);
             }
             else
             {
-                L.E("Samba try remount fail with code({0}),result(\n{1}\n)", code, res);
+                return code;
             }
-            return code;
         }
 
         public static readonly IList<Samba> Volumes = new List<Samba>();

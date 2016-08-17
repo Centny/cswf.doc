@@ -68,14 +68,14 @@ namespace io.vty.cswf.doc
             }
         }
         private static readonly ILog L = Log.New();
-        public DocCov(string name, FCfg cfg) : base(name, cfg)
+        public DocCov(string name, FCfg cfg, netw.rc.EvnListener evn = null) : base(name, cfg, evn)
         {
             this.builder = () =>
             {
                 throw new NotImplementedException("NetwBaseBuilder is not implemented");
             };
         }
-        public DocCov(string name, FCfg cfg, NetwRunnerV.NetwBaseBuilder builder) : base(name, cfg, builder)
+        public DocCov(string name, FCfg cfg, NetwRunnerV.NetwBaseBuilder builder, netw.rc.EvnListener evn = null) : base(name, cfg, builder, evn)
         {
             this.builder = builder;
         }

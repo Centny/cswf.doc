@@ -137,14 +137,14 @@ namespace io.vty.cswf.doc
         {
             foreach (String exc in this.Exc)
             {
-                if (exc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
+                if (title.IndexOf(exc, StringComparison.OrdinalIgnoreCase) > -1)
                 {
                     return false;
                 }
             }
             foreach (String inc in this.Inc)
             {
-                if (inc.IndexOf(title, StringComparison.OrdinalIgnoreCase) > -1)
+                if (title.IndexOf(inc, StringComparison.OrdinalIgnoreCase) > -1)
                 {
                     return true;
                 }

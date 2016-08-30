@@ -114,7 +114,8 @@ namespace io.vty.cswf.doc
             L.D("executing word2png by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             Word word = null;
             this.Cdl.add();
-            var tf = Path.GetTempFileName();
+            var tf_base = Path.GetTempFileName();
+            var tf = tf_base + Path.GetExtension(this.AsSrc);
             try
             {
                 File.Copy(this.AsSrc, tf, true);
@@ -178,6 +179,7 @@ namespace io.vty.cswf.doc
                 try
                 {
                     File.Delete(tf);
+                    File.Delete(tf_base);
                 }
                 catch (Exception e)
                 {

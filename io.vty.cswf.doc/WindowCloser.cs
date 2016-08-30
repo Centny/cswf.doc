@@ -121,6 +121,7 @@ namespace io.vty.cswf.doc
                 }
                 if (!this.isHitted(msg))
                 {
+                    L.D("WindowCloser do proc ignore widown({0})", title.ToString());
                     return true;
                 }
                 SendMessage(hWnd, WM_CLOSE, 0, 0);

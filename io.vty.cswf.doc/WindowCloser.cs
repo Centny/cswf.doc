@@ -53,6 +53,7 @@ namespace io.vty.cswf.doc
         public IList<String> Inc { protected set; get; }
         public Timer T { get; protected set; }
         public int Period { get; set; }
+        public bool ShowLog { get; set; }
         public WindowCloser()
         {
             this.Exc = new List<String>();
@@ -119,13 +120,15 @@ namespace io.vty.cswf.doc
                 {
                     return true;
                 }
-                if (!this.isHitted(msg))
+                if (this.isHitted(msg))
+                {
+                    SendMessage(hWnd, WM_CLOSE, 0, 0);
+                    L.D("WindowCloser do proc sending close message to window({0}) success", title.ToString());
+                }
+                else if (this.ShowLog)
                 {
                     L.D("WindowCloser do proc ignore widown({0})", title.ToString());
-                    return true;
                 }
-                SendMessage(hWnd, WM_CLOSE, 0, 0);
-                L.D("doProc sending close message to window({0}) success", title.ToString());
             }
             catch (Exception e)
             {

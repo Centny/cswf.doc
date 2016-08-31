@@ -30,7 +30,7 @@ namespace io.vty.cswf.doc
                 try
                 {
                     this.App.Quit();
-                    ProcKiller.DelRunning(this.Pid);
+                    //ProcKiller.DelRunning(this.Pid);
                     L.D("PowerPoint application({0}) quit success", this.Pid);
                 }
                 catch (Exception e)
@@ -58,17 +58,18 @@ namespace io.vty.cswf.doc
             }
             try
             {
-                ProcKiller.Shared.Lock();
+                //ProcKiller.Shared.Lock();
                 app = new PowerPoint(new Application());
                 //app.App.Visible = MsoTriState.msoTrue;
                 app.Doc = app.App.Presentations.Open(src, MsoTriState.msoFalse, MsoTriState.msoFalse, MsoTriState.msoFalse);
                 app.Pid = CovProc.GetWindowThreadProcessId(app.App.HWND);
-                ProcKiller.AddRunning(app.Pid);
-                ProcKiller.Shared.Unlock();
+                ProcKiller.MarkUsed(app.Pid);
+                //ProcKiller.AddRunning(app.Pid);
+                //ProcKiller.Shared.Unlock();
             }
             catch (Exception e)
             {
-                ProcKiller.Shared.Unlock();
+                //ProcKiller.Shared.Unlock();
                 throw e;
             }
             return app;
@@ -83,6 +84,7 @@ namespace io.vty.cswf.doc
                 }
                 app.Doc = null;
                 Cached.Enqueue(app);
+                ProcKiller.MarkDone(app.Pid);
             }
             catch (Exception e)
             {

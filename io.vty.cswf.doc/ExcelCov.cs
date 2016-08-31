@@ -31,7 +31,7 @@ namespace io.vty.cswf.doc
                 try
                 {
                     this.App.Quit();
-                    ProcKiller.DelRunning(this.Pid);
+                    //ProcKiller.DelRunning(this.Pid);
                     L.D("Excel application({0}) quit success", this.Pid);
                 }
                 catch (Exception e)
@@ -60,18 +60,18 @@ namespace io.vty.cswf.doc
             }
             try
             {
-                ProcKiller.Shared.Lock();
+                //ProcKiller.Shared.Lock();
                 app = new Excel(new Application());
                 app.App.Visible = true;
                 app.Book = app.App.Workbooks.Open(src, 0, true, 5, "", "",
                     true, XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
                 app.Pid = CovProc.GetWindowThreadProcessId(app.App.ActiveWindow.Hwnd);
-                ProcKiller.AddRunning(app.Pid);
-                ProcKiller.Shared.Unlock();
+                //ProcKiller.AddRunning(app.Pid);
+                //ProcKiller.Shared.Unlock();
             }
             catch (Exception e)
             {
-                ProcKiller.Shared.Unlock();
+                //ProcKiller.Shared.Unlock();
                 throw e;
             }
             return app;

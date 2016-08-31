@@ -54,6 +54,13 @@ namespace io.vty.cswf.doc
         {
             images.Read(pdf, settings);
             int pages = images.Count;
+            if (pages > this.MaxPage)
+            {
+                this.Result.Code = 413;
+                L.D("executing pdf2img by file({0}),destination format({1}) fail with too large code({2}),count({3})",
+                    this.AsSrc, this.AsDstF, this.Result.Code, this.Result.Count);
+                return 0;
+            }
             if (idx < 0)
             {
                 this.Total = new int[pages];

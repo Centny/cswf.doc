@@ -66,7 +66,7 @@ namespace io.vty.cswf.doc
             app.App.Visible = true;
             try
             {
-                ProcKiller.Shared.Lock();
+                ProcKiller.Shared.Lock("word");
                 app.Doc = app.App.Documents.Open(src, false, true);
                 app.Doc.ShowGrammaticalErrors = false;
                 app.Doc.PrintFormsData = false;
@@ -74,11 +74,11 @@ namespace io.vty.cswf.doc
                 app.Pid = CovProc.GetWindowThreadProcessId(app.Doc.ActiveWindow.Hwnd);
                 ProcKiller.AddRunning(app.Pid);
                 ProcKiller.MarkUsed(app.Pid);
-                ProcKiller.Shared.Unlock();
+                ProcKiller.Shared.Unlock("word");
             }
             catch (Exception e)
             {
-                ProcKiller.Shared.Unlock();
+                ProcKiller.Shared.Unlock("word");
                 throw e;
             }
             return app;

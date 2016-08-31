@@ -51,9 +51,9 @@ namespace io.vty.cswf.doc
         public static extern bool IsWindowVisible(int hWnd);
         public IList<String> Exc { protected set; get; }
         public IList<String> Inc { protected set; get; }
-        public Timer T { get; protected set; }
         public int Period { get; set; }
         public bool ShowLog { get; set; }
+        private bool srunning;
         public WindowCloser()
         {
             this.Exc = new List<String>();
@@ -154,12 +154,22 @@ namespace io.vty.cswf.doc
             }
             return false;
         }
-        public void Start()
+
+
+        protected virtual void loop(object state)
         {
-            this.T = new Timer((o) =>
+            this.srunning = true;
+            while (this.srunning)
             {
                 this.SendClose();
-            }, 0, this.Period, this.Period);
+                Thread.Sleep(this.Period);
+            }
+            this.srunning = false;
+        }
+
+        public void Start()
+        {
+            new Thread(this.loop).Start();
         }
 
         public void Stop()
@@ -168,12 +178,7 @@ namespace io.vty.cswf.doc
         }
         public void Dispose()
         {
-            if (this.T == null)
-            {
-                return;
-            }
-            this.T.Dispose();
-            this.T = null;
+            this.srunning = false;
         }
     }
 }

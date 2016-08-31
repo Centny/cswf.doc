@@ -101,7 +101,7 @@ namespace io.vty.cswf.doc
             var period = this.Cfg.Val("MPPT", 30000);
             var timeout = this.Cfg.Val("MPTO", 60000);
             var showlog = this.Cfg.Val("MPLOG", "0") == "1";
-            L.I("DocCov start process monitor by names({0}),period({1}),timeout({2})", names, period, timeout);
+            L.I("DocCov start process monitor by names({0}),period({1}),timeout({2}),log({3})", names, period, timeout, showlog);
             foreach (var name in names.Split(','))
             {
                 ProcKiller.AddName(name);

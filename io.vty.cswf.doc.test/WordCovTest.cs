@@ -54,8 +54,8 @@ namespace io.vty.cswf.doc.test
             cov.Exec();
             cov.PrintFails();
             Assert.AreEqual(0, cov.Fails.Count);
-            Assert.AreEqual(7, cov.Result.Count);
-            Assert.AreEqual(7, cov.Result.Files.Count);
+            Assert.AreEqual(26, cov.Result.Count);
+            Assert.AreEqual(26, cov.Result.Files.Count);
         }
         [TestCleanup]
         public void clear()

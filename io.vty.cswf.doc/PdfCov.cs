@@ -33,16 +33,28 @@ namespace io.vty.cswf.doc
             //var pages = this.Beg;
             L.D("executing pdf2img by file({0}),destination format({1})", this.AsSrc, this.AsDstF);
             this.Cdl.add();
+            var tf_base = Path.GetTempFileName();
+            var tf = tf_base + Path.GetExtension(this.AsSrc);
             MagickImageCollection images = new MagickImageCollection();
             try
             {
-                this.Pdf2imgProc(images, this.AsSrc, -1, 0);
+                File.Copy(this.AsSrc, tf, true);
+                this.Pdf2imgProc(images, tf, -1, 0);
             }
             catch (Exception e)
             {
                 L.E(e, "executing pdf2img by file({0}),destination format({1}) fail with error->{2}", this.AsSrc, this.AsDstF, e.Message);
                 this.Result.Code = 500;
                 this.Fails.Add(e);
+            }
+            try
+            {
+                File.Delete(tf);
+                File.Delete(tf_base);
+            }
+            catch (Exception e)
+            {
+                L.W("executing pdf2img on delete temp file({0}) error->{1}", tf, e.Message);
             }
             this.Cdl.done();
             this.Cdl.wait();

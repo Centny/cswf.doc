@@ -43,7 +43,7 @@ namespace io.vty.cswf.doc
             }
             catch (Exception e)
             {
-                L.E(e, "executing pdf2img by file({0}),destination format({1}) fail with error->{2}", this.AsSrc, this.AsDstF, e.Message);
+                L.E(e, "executing pdf2img by file({0}),destination format({1}) fail with error->{2}", tf, this.AsDstF, e.Message);
                 this.Result.Code = 500;
                 this.Fails.Add(e);
             }

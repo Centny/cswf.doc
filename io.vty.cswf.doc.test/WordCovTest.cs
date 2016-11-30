@@ -46,6 +46,17 @@ namespace io.vty.cswf.doc.test
                 Assert.AreEqual(0, cov.Fails.Count);
             }
         }
+        [TestMethod]
+        public void TestPdf2img()
+        {
+            TaskPool.Shared.MaximumConcurrency = 2;
+            WordCov cov = new WordCov("test\\xx1.pdf", "pdf-{0}.jpg");
+            cov.Exec();
+            cov.PrintFails();
+            Assert.AreEqual(0, cov.Fails.Count);
+            Assert.AreEqual(7, cov.Result.Count);
+            Assert.AreEqual(7, cov.Result.Files.Count);
+        }
         [TestCleanup]
         public void clear()
         {
